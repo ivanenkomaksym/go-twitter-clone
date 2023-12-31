@@ -1,9 +1,11 @@
 package main
 
 import (
-	"fmt"
+	_ "fmt"
+	"twitter-clone/internal/config"
 )
 
 func main() {
-	fmt.Println("Hello from Server!")
+	configuration := config.ReadConfiguration()
+	_ = configuration
 }
