@@ -8,7 +8,7 @@ import (
 func CreateTweetRepository(configuration config.Configuration) (TweetRepository, error) {
 	switch configuration.Mode {
 	case config.InMemory:
-		return nil, errors.New("inmemory mode not implemented")
+		return &InMemoryTweetRepository{}, nil
 	case config.Persistent:
 		return nil, errors.New("persistent mode not implemented")
 	default:
