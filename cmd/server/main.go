@@ -1,11 +1,13 @@
 package main
 
 import (
-	_ "fmt"
+	"context"
+	"twitter-clone/internal/api"
 	"twitter-clone/internal/config"
 )
 
 func main() {
 	configuration := config.ReadConfiguration()
-	_ = configuration
+
+	api.StartHttpServer(configuration, context.TODO())
 }
