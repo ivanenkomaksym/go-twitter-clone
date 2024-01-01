@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"twitter-clone/internal/api"
 	"twitter-clone/internal/config"
@@ -11,11 +10,11 @@ import (
 func main() {
 	configuration := config.ReadConfiguration()
 
-	_, err := repositories.CreateTweetRepository(configuration)
+	repo, err := repositories.CreateTweetRepository(configuration)
 	if err != nil {
 		fmt.Println("Failed to create repository: ", err)
 		return
 	}
 
-	api.StartHttpServer(configuration, context.TODO())
+	api.StartHttpServer(configuration, repo)
 }

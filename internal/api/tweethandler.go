@@ -1,14 +1,14 @@
 package api
 
 import (
-	"context"
 	"net/http"
 	"twitter-clone/internal/models"
+	"twitter-clone/internal/repositories"
 
 	"github.com/gin-gonic/gin"
 )
 
-func createTweet(ctx context.Context) gin.HandlerFunc {
+func createTweet(repo repositories.TweetRepository) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		var newTweet models.Tweet
 
@@ -18,15 +18,22 @@ func createTweet(ctx context.Context) gin.HandlerFunc {
 			return
 		}
 
-		c.IndentedJSON(http.StatusCreated, newTweet)
+		var created = repo.CreateTweet(newTweet)
+
+		if created == nil {
+			c.IndentedJSON(http.StatusConflict, gin.H{"message": "Conflict. Tweet already exists."})
+			return
+		}
+
+		c.IndentedJSON(http.StatusCreated, created)
 	}
 
 	return gin.HandlerFunc(fn)
 }
 
-func getTweets(ctx context.Context) gin.HandlerFunc {
+func getTweets(repo repositories.TweetRepository) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
-		var results []models.Tweet
+		var results = repo.GetTweets()
 
 		c.IndentedJSON(http.StatusOK, results)
 	}
@@ -34,27 +41,33 @@ func getTweets(ctx context.Context) gin.HandlerFunc {
 	return gin.HandlerFunc(fn)
 }
 
-func getTweetByTweetId(ctx context.Context) gin.HandlerFunc {
+func getTweetByTweetId(repo repositories.TweetRepository) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		tweetId := c.Param("tweetId")
-		_ = tweetId
+		var found = repo.GetTweetById(tweetId)
 
-		var result models.Tweet
+		if found == nil {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Tweet doesn't exists."})
+			return
+		}
 
-		c.IndentedJSON(http.StatusOK, result)
+		c.IndentedJSON(http.StatusOK, found)
 	}
 
 	return gin.HandlerFunc(fn)
 }
 
-func deleteTweet(ctx context.Context) gin.HandlerFunc {
+func deleteTweet(repo repositories.TweetRepository) gin.HandlerFunc {
 	fn := func(c *gin.Context) {
 		tweetId := c.Param("tweetId")
-		_ = tweetId
+		var deleted = repo.DeleteTweet(tweetId)
 
-		var result models.Tweet
+		if !deleted {
+			c.IndentedJSON(http.StatusNotFound, gin.H{"message": "Tweet doesn't exists."})
+			return
+		}
 
-		c.IndentedJSON(http.StatusNoContent, result)
+		c.IndentedJSON(http.StatusNoContent, deleted)
 	}
 
 	return gin.HandlerFunc(fn)
