@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"twitter-clone/internal/api"
 	"twitter-clone/internal/config"
+	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/repositories"
+
+	"github.com/ThreeDotsLabs/watermill"
 )
 
 func main() {
@@ -16,10 +19,17 @@ func main() {
 		return
 	}
 
-	_, err = repositories.CreateFeedRepository(configuration)
+	feedRepo, err := repositories.CreateFeedRepository(configuration)
 	if err != nil {
 		fmt.Println("Failed to create feed repository: ", err)
 		return
+	}
+
+	logger := watermill.NewStdLogger(false, false)
+
+	_, _, err = messaging.SetupMessageRouter(feedRepo, logger)
+	if err != nil {
+		panic(err)
 	}
 
 	api.StartHttpServer(configuration, tweetRepo)
