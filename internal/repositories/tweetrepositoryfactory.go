@@ -10,7 +10,7 @@ func CreateTweetRepository(configuration config.Configuration) (TweetRepository,
 	case config.InMemory:
 		return &InMemoryTweetRepository{}, nil
 	case config.Persistent:
-		return nil, errors.New("persistent mode not implemented")
+		return NewPersistentTweetRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}
