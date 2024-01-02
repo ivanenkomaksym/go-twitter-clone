@@ -10,11 +10,17 @@ import (
 func main() {
 	configuration := config.ReadConfiguration()
 
-	repo, err := repositories.CreateTweetRepository(configuration)
+	tweetRepo, err := repositories.CreateTweetRepository(configuration)
 	if err != nil {
-		fmt.Println("Failed to create repository: ", err)
+		fmt.Println("Failed to create tweet repository: ", err)
 		return
 	}
 
-	api.StartHttpServer(configuration, repo)
+	_, err = repositories.CreateFeedRepository(configuration)
+	if err != nil {
+		fmt.Println("Failed to create feed repository: ", err)
+		return
+	}
+
+	api.StartHttpServer(configuration, tweetRepo)
 }
