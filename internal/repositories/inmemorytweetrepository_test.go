@@ -20,7 +20,7 @@ func TestInMemoryTweetRepository(t *testing.T) {
 		Content:   "content",
 		Author:    "author",
 		Tags:      []string{"tag1"},
-		CreatedAt: time.Now(),
+		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
 	}
 
 	// Test CreateTweet
