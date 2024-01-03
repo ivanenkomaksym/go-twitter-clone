@@ -4,10 +4,7 @@ import (
 	"fmt"
 	"twitter-clone/internal/api"
 	"twitter-clone/internal/config"
-	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/repositories"
-
-	"github.com/ThreeDotsLabs/watermill"
 )
 
 func main() {
@@ -25,12 +22,5 @@ func main() {
 		return
 	}
 
-	logger := watermill.NewStdLogger(false, false)
-
-	_, _, err = messaging.SetupMessageRouter(feedRepo, logger)
-	if err != nil {
-		panic(err)
-	}
-
-	api.StartHttpServer(configuration, tweetRepo)
+	api.StartRouter(configuration, tweetRepo, feedRepo)
 }

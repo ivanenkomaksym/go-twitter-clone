@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"time"
+	"twitter-clone/internal/config"
 	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/models"
 	"twitter-clone/internal/repositories"
@@ -15,6 +16,30 @@ import (
 
 	watermillHTTP "github.com/ThreeDotsLabs/watermill-http/pkg/http"
 )
+
+func StartRouter(configuration config.Configuration, tweetRepo repositories.TweetRepository, feedRepo repositories.FeedRepository) {
+	logger := watermill.NewStdLogger(false, false)
+
+	pub, sub, err := messaging.SetupMessageRouter(feedRepo, logger)
+	if err != nil {
+		panic(err)
+	}
+
+	httpRouter := Router{
+		Subscriber: sub,
+		Publisher:  Publisher{Publisher: pub},
+		TweetRepo:  tweetRepo,
+		FeedRepo:   feedRepo,
+		Logger:     logger,
+	}
+
+	mux := httpRouter.Mux()
+
+	err = http.ListenAndServe(configuration.ApiServer.ApplicationUrl, mux)
+	if err != nil {
+		panic(err)
+	}
+}
 
 type Router struct {
 	Subscriber message.Subscriber
