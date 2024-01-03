@@ -108,3 +108,16 @@ func (f AllFeedsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Reques
 func (f AllFeedsStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok bool) {
 	return true
 }
+
+type AllTweetsStreamAdapter struct {
+	repo repositories.TweetRepository
+}
+
+func (f AllTweetsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
+	tweets := f.repo.GetTweets()
+	return tweets, true
+}
+
+func (f AllTweetsStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok bool) {
+	return true
+}

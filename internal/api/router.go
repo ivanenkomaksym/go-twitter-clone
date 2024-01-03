@@ -65,15 +65,19 @@ func (router Router) Mux() *chi.Mux {
 
 	tweetStream := TweetStreamAdapter{repo: router.TweetRepo, logger: router.Logger}
 	feedStream := FeedStreamAdapter{repo: router.FeedRepo, logger: router.Logger}
+	allTweetsStream := AllTweetsStreamAdapter{repo: router.TweetRepo}
 	allFeedsStream := AllFeedsStreamAdapter{repo: router.FeedRepo, logger: router.Logger}
 
 	tweetHandler := sseRouter.AddHandler(messaging.TweetCreatedTopic, tweetStream)
 	_ = sseRouter.AddHandler(messaging.FeedUpdatedTopic, feedStream)
+	allTweetsHandler := sseRouter.AddHandler(messaging.TweetUpdatedTopic, allTweetsStream)
 	_ = sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/tweets", router.CreateTweet)
+		r.Get("/tweets", allTweetsHandler)
 		r.Get("/tweets/{tweetId}", tweetHandler)
+		r.Delete("/tweets/{tweetId}", router.DeleteTweet)
 	})
 
 	go func() {
@@ -108,8 +112,22 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 
 	err = router.Publisher.Publish(messaging.TweetCreatedTopic, event)
 	if err != nil {
+		w.WriteHeader(400)
 		return
 	}
+
+	w.WriteHeader(201)
+}
+
+func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
+	tweetId := chi.URLParam(r, "tweetId")
+	var deleted = router.TweetRepo.DeleteTweet(tweetId)
+
+	if !deleted {
+		w.WriteHeader(404)
+	}
+
+	w.WriteHeader(204)
 }
 
 func logAndWriteError(logger watermill.LoggerAdapter, w http.ResponseWriter, err error) {

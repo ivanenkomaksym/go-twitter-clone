@@ -15,6 +15,7 @@ import (
 
 const (
 	TweetCreatedTopic = "tweet-created"
+	TweetUpdatedTopic = "tweet-updated"
 	FeedUpdatedTopic  = "feed-updated"
 )
 
