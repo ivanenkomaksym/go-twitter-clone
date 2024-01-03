@@ -11,6 +11,13 @@ type TweetCreated struct {
 	OccurredAt time.Time `json:"occurred_at"`
 }
 
+type TweetUpdated struct {
+	OriginalTweet models.Tweet `json:"original_tweet"`
+	NewTweet      models.Tweet `json:"new_tweet"`
+
+	OccurredAt time.Time `json:"occurred_at"`
+}
+
 type FeedUpdated struct {
 	Name string `json:"name"`
 

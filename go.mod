@@ -2,11 +2,18 @@ module twitter-clone
 
 go 1.21.1
 
-require github.com/gin-gonic/gin v1.9.1
+require (
+	github.com/ThreeDotsLabs/watermill-http v1.1.4
+	github.com/gin-gonic/gin v1.9.1
+	github.com/go-chi/chi/v5 v5.0.8
+	github.com/go-chi/render v1.0.3
+)
 
 require (
+	github.com/ajg/form v1.5.1 // indirect
 	github.com/cenkalti/backoff/v3 v3.2.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-chi/chi v4.0.2+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
