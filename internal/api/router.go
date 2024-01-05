@@ -69,15 +69,17 @@ func (router Router) Mux() *chi.Mux {
 	allFeedsStream := AllFeedsStreamAdapter{repo: router.FeedRepo, logger: router.Logger}
 
 	tweetHandler := sseRouter.AddHandler(messaging.TweetCreatedTopic, tweetStream)
-	_ = sseRouter.AddHandler(messaging.FeedUpdatedTopic, feedStream)
+	feedHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, feedStream)
 	allTweetsHandler := sseRouter.AddHandler(messaging.TweetUpdatedTopic, allTweetsStream)
-	_ = sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
+	allFeedsHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/tweets", router.CreateTweet)
 		r.Get("/tweets", allTweetsHandler)
 		r.Get("/tweets/{tweetId}", tweetHandler)
 		r.Delete("/tweets/{tweetId}", router.DeleteTweet)
+		r.Get("/feeds/{name}", feedHandler)
+		r.Get("/feeds", allFeedsHandler)
 	})
 
 	go func() {

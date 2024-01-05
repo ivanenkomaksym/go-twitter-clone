@@ -25,6 +25,10 @@ func (f FeedStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (
 		return nil, false
 	}
 
+	if feed == nil {
+		w.WriteHeader(404)
+	}
+
 	return feed, true
 }
 

@@ -126,18 +126,3 @@ func createFeedUpdatedEvents(tags []string) ([]*message.Message, error) {
 
 	return messages, nil
 }
-
-type Publisher struct {
-	publisher message.Publisher
-}
-
-func (p Publisher) Publish(topic string, event interface{}) error {
-	payload, err := json.Marshal(event)
-	if err != nil {
-		return err
-	}
-
-	msg := message.NewMessage(watermill.NewUUID(), payload)
-
-	return p.publisher.Publish(topic, msg)
-}

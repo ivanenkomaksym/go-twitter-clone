@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"errors"
 	"slices"
 	"twitter-clone/internal/models"
 )
@@ -13,7 +12,7 @@ type InMemoryFeedRepository struct {
 func (repo *InMemoryFeedRepository) CreateFeed(name string) error {
 	idx := slices.IndexFunc(repo.feeds, func(f models.Feed) bool { return f.Name == name })
 	if idx != -1 {
-		return errors.New("Feed with the given name already exists")
+		return nil
 	}
 
 	feed := models.Feed{
@@ -43,13 +42,13 @@ func (repo *InMemoryFeedRepository) AppendTweet(tweet models.Tweet) error {
 		return nil
 	}
 
-	for _, feed := range repo.feeds {
+	for idx, _ := range repo.feeds {
 		// Check if the feed should get updated based on new tweet tags
-		if containsTag(tweet.Tags, feed.Name) {
+		if containsTag(tweet.Tags, repo.feeds[idx].Name) {
 			// Check if the tweet is not already present in the feed
-			if !containsTweet(feed.Tweets, tweet.ID) {
+			if !containsTweet(repo.feeds[idx].Tweets, tweet.ID) {
 				// Add the tweet to the feed
-				feed.Tweets = append([]models.Tweet{tweet}, feed.Tweets...)
+				repo.feeds[idx].Tweets = append(repo.feeds[idx].Tweets, tweet)
 			}
 		}
 	}
