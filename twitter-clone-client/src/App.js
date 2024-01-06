@@ -1,34 +1,34 @@
-// Import necessary dependencies
 import React, { useState, useEffect } from 'react';
-import './TweetForm.css'; // Import the CSS file
+import { v4 as uuidv4 } from 'uuid';
+import './TweetForm.css';
 
-// Define your functional component
 const TweetForm = () => {
-  // State for form data
+  // Load hashtags from local storage on component mount
+  const savedHashtags = JSON.parse(localStorage.getItem('hashtags')) || [];
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     author: ''
   });
 
-  // State for tags
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(savedHashtags);
+  const [selectedTag, setSelectedTag] = useState(null);
+  const [taggedTweets, setTaggedTweets] = useState([]);
 
-  // Function to handle form submission
   const handleAddTweet = async () => {
-    // Create the JSON object to send in the POST request
+    const currentDate = new Date().toISOString();
+
     const tweetData = {
-      id: '123',
+      id: uuidv4(),
       title: formData.title,
       content: formData.content,
       author: formData.author,
       tags: tags,
-      created_at: '2024-01-01T00:00:00Z',
+      created_at: currentDate,
       likes: null
     };
 
     try {
-      // Make the POST request
       const response = await fetch('http://localhost:8016/api/tweets', {
         method: 'POST',
         headers: {
@@ -37,9 +37,14 @@ const TweetForm = () => {
         body: JSON.stringify(tweetData)
       });
 
-      // Handle the response as needed
       if (response.ok) {
         console.log('Tweet added successfully!');
+        // Clear the form after successful submission
+        setFormData({
+          title: '',
+          content: '',
+          author: ''
+        });
       } else {
         console.error('Failed to add tweet.');
       }
@@ -48,14 +53,26 @@ const TweetForm = () => {
     }
   };
 
-  // Function to update tags based on content
+  const handleTagClick = async (tag) => {
+    try {
+      const response = await fetch(`http://localhost:8016/api/feeds/${tag}`);
+      if (response.ok) {
+        const feedData = await response.json();
+        setSelectedTag(tag);
+        setTaggedTweets(feedData.tweets);
+      } else {
+        console.error('Failed to fetch feed.');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   useEffect(() => {
-    // Extract hashtags from content
     const contentTags = formData.content.match(/#[a-zA-Z0-9_]+/g) || [];
-    setTags(contentTags.map(tag => tag.substring(1))); // Remove '#' from tags
+    setTags(contentTags.map(tag => tag.substring(1)));
   }, [formData.content]);
 
-  // Function to handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -64,9 +81,17 @@ const TweetForm = () => {
     });
   };
 
-  // JSX for the component
   return (
     <div className="tweet-form-container">
+      <h3>Entered Hashtags:</h3>
+      <ul className="hashtags-list">
+        {tags.map((tag, index) => (
+          <li key={index}>
+            <a href="#" onClick={() => handleTagClick(tag)}>{`#${tag}`}</a>
+          </li>
+        ))}
+      </ul>
+
       <h2>Add new tweet</h2>
       <form className="tweet-form">
         <div className="form-group">
@@ -86,6 +111,19 @@ const TweetForm = () => {
 
         <button type="button" onClick={handleAddTweet}>Add tweet</button>
       </form>
+
+      {selectedTag && (
+        <div className="tagged-tweets-container">
+          <h3>Tweets with #{selectedTag}</h3>
+          <ul>
+            {taggedTweets.map((tweet) => (
+              <li key={tweet.id}>
+                <strong>{tweet.title}</strong> - {tweet.content} by {tweet.author}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };
