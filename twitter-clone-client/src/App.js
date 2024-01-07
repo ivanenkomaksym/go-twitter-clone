@@ -33,7 +33,10 @@ const TweetForm = () => {
     const resultContentTags = contentTags.map(tag => tag.substring(1));
 
     // Update the tags state before calling setFormData
-    setTags(prevTags => [...prevTags, ...resultContentTags]);
+    setTags((prevTags) => {
+      const uniqueTags = Array.from(new Set([...prevTags, ...resultContentTags]));
+      return uniqueTags;
+    });
 
     const tweetData = {
       id: uuidv4(),
@@ -59,8 +62,7 @@ const TweetForm = () => {
         // Clear the form after successful submission
         setFormData({
           title: '',
-          content: '',
-          author: ''
+          content: ''
         });
       } else {
         console.error('Failed to add tweet.');
@@ -127,14 +129,23 @@ const TweetForm = () => {
       {selectedTag && (
         <div className="tagged-tweets-container">
           <h3>Tweets with #{selectedTag}</h3>
-          <ul>
+          <div className="tweet-boxes">
             {taggedTweets.map((tweet) => (
-              <li key={tweet.id}>
-                <strong>{tweet.title}</strong> - {tweet.content} by {tweet.author}
-              </li>
+              <div key={tweet.id} className="tweet-box">
+                <div className="tweet-title">
+                  <strong>{tweet.title}</strong>
+                </div>
+                <div className="tweet-content">
+                  {tweet.content}
+                </div>
+                <div className="tweet-author">
+                  <span className="author-text">by {tweet.author}</span>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
+
       )}
     </div>
   );

@@ -43,3 +43,33 @@
     background-color: #45a049;
   }
   
+  .tagged-tweets-container {
+    margin-top: 20px;
+  }
+  
+  .tweet-boxes {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .tweet-box {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px;
+    width: 100%; /* Extend to fill the outer frame */
+  }
+  
+  .tweet-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .tweet-content {
+    margin-bottom: 8px;
+  }
+  
+  .tweet-author {
+    color: #777;
+  }
+  
