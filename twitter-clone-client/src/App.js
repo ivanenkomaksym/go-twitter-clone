@@ -4,19 +4,36 @@ import './TweetForm.css';
 
 const TweetForm = () => {
   // Load hashtags from local storage on component mount
-  const savedHashtags = JSON.parse(localStorage.getItem('hashtags')) || [];
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     author: ''
   });
 
-  const [tags, setTags] = useState(savedHashtags);
+  const [tags, setTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [taggedTweets, setTaggedTweets] = useState([]);
 
+  useEffect(() => {
+    const items = JSON.parse(localStorage.getItem('tags')) || [];
+    if (items) {
+      setTags(items);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (tags.length > 0)
+      localStorage.setItem('tags', JSON.stringify(tags));
+  }, [tags]);
+
   const handleAddTweet = async () => {
     const currentDate = new Date().toISOString();
+
+    const contentTags = formData.content.match(/#[a-zA-Z0-9_]+/g) || [];
+    const resultContentTags = contentTags.map(tag => tag.substring(1));
+
+    // Update the tags state before calling setFormData
+    setTags(prevTags => [...prevTags, ...resultContentTags]);
 
     const tweetData = {
       id: uuidv4(),
@@ -67,11 +84,6 @@ const TweetForm = () => {
       console.error('Error:', error);
     }
   };
-
-  useEffect(() => {
-    const contentTags = formData.content.match(/#[a-zA-Z0-9_]+/g) || [];
-    setTags(contentTags.map(tag => tag.substring(1)));
-  }, [formData.content]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
