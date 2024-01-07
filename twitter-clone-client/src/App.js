@@ -11,20 +11,51 @@ const TweetForm = () => {
   });
 
   const [tags, setTags] = useState([]);
+  const [tweetTags, setTweetTags] = useState([]);
   const [selectedTag, setSelectedTag] = useState(null);
   const [taggedTweets, setTaggedTweets] = useState([]);
+  const [eventSource, setEventSource] = useState(null);
 
+  // Effect to fetch tags from server on component mount
   useEffect(() => {
-    const items = JSON.parse(localStorage.getItem('tags')) || [];
-    if (items) {
-      setTags(items);
-    }
+    const fetchTags = async () => {
+      try {
+        const response = await fetch('http://localhost:8016/api/feeds');
+        
+        if (response.ok) {
+          const data = await response.json();
+          const fetchedTags = data.feeds.map(feed => feed.name);
+          setTags(fetchedTags);
+        } else {
+          console.error('Failed to fetch tags.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchTags();
   }, []);
 
+  // Effect to set up EventSource for data changes
   useEffect(() => {
-    if (tags.length > 0)
-      localStorage.setItem('tags', JSON.stringify(tags));
-  }, [tags]);
+    const eventSource = new EventSource('http://localhost:8016/api/feeds');
+
+    eventSource.addEventListener('data', (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        const updatedTags = data.feeds.map(feed => feed.name);
+        setTags(updatedTags);
+      } catch (error) {
+        console.error('Error parsing event data:', error);
+      }
+    });
+
+    return () => {
+      // Clean up EventSource when component is unmounted
+      eventSource.close();
+    };
+  }, []);
 
   const handleAddTweet = async () => {
     const currentDate = new Date().toISOString();
@@ -43,7 +74,7 @@ const TweetForm = () => {
       title: formData.title,
       content: formData.content,
       author: formData.author,
-      tags: tags,
+      tags: tweetTags,
       created_at: currentDate,
       likes: null
     };
@@ -74,18 +105,56 @@ const TweetForm = () => {
 
   const handleTagClick = async (tag) => {
     try {
+      setSelectedTag(tag);
+      
       const response = await fetch(`http://localhost:8016/api/feeds/${tag}`);
       if (response.ok) {
         const feedData = await response.json();
-        setSelectedTag(tag);
         setTaggedTweets(feedData.tweets);
+
+        // Close existing EventSource connection if any
+        if (eventSource) {
+          eventSource.close();
+        }
+
+        // Set up a new EventSource connection
+        const newEventSource = new EventSource(`http://localhost:8016/api/feeds/${tag}`);
+
+        // Add event listener for the 'data' event
+        newEventSource.addEventListener('data', (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.info('data EventSource', data)
+            setTaggedTweets(data.tweets || []);
+          } catch (error) {
+            console.error('Error parsing event data:', error);
+          }
+        });
+
+        // Save the new EventSource instance to close later
+        setEventSource(newEventSource);
       } else {
+        setTaggedTweets([]);
         console.error('Failed to fetch feed.');
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
+  useEffect(() => {
+    const contentTags = formData.content.match(/#[a-zA-Z0-9_]+/g) || [];
+    setTweetTags(contentTags.map(tag => tag.substring(1)));
+  }, [formData.content]);
+
+  useEffect(() => {
+    // Clean up EventSource when component is unmounted or tag changes
+    return () => {
+      if (eventSource) {
+        eventSource.close();
+      }
+    };
+  }, [selectedTag]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -98,13 +167,9 @@ const TweetForm = () => {
   return (
     <div className="tweet-form-container">
       <h3>Entered Hashtags:</h3>
-      <ul className="hashtags-list">
-        {tags.map((tag, index) => (
-          <li key={index}>
-            <a href="#" onClick={() => handleTagClick(tag)}>{`#${tag}`}</a>
-          </li>
-        ))}
-      </ul>
+          {tags.map((tag, index) => (
+              <a href="#" onClick={() => handleTagClick(tag)}>{`#${tag} | `}</a>
+          ))}
 
       <h2>Add new tweet</h2>
       <form className="tweet-form">
