@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
+import clientConfig from './clientConfig';
 
 // Function to fetch tags from the server
 export const fetchTagsFromServer = async () => {
     try {
-      const response = await fetch('http://localhost:8016/api/feeds');
+      const response = await fetch(clientConfig.applicationUri + '/api/feeds');
   
       if (response.ok) {
         const data = await response.json();
@@ -23,7 +24,7 @@ export const fetchTagsFromServer = async () => {
     const currentDate = new Date().toISOString();
   
     try {
-      const response = await fetch('http://localhost:8016/api/tweets', {
+      const response = await fetch(clientConfig.applicationUri + '/api/tweets', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -54,7 +55,7 @@ export const fetchTagsFromServer = async () => {
   
   export const fetchTaggedTweets = async (tag, setTaggedTweets) => {
     try {
-      const response = await fetch(`http://localhost:8016/api/feeds/${tag}`);
+      const response = await fetch(clientConfig.applicationUri + `/api/feeds/${tag}`);
   
       if (response.ok) {
         const feedData = await response.json();

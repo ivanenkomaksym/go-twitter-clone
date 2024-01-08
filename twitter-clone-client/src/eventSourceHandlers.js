@@ -1,6 +1,8 @@
+import clientConfig from './clientConfig';
+
 // Function to set up EventSource for data changes
 export const setUpFeedsEventSource = (setDataCallback) => {
-    const eventSource = new EventSource('http://localhost:8016/api/feeds');
+    const eventSource = new EventSource(clientConfig.applicationUri + '/api/feeds');
   
     // Add event listener for the 'data' event
     eventSource.addEventListener('data', (event) => {
@@ -20,7 +22,7 @@ export const setUpFeedsEventSource = (setDataCallback) => {
 // Function to set up EventSource for data changes
 export const setUpFeedsTagEventSource = (tag, setDataCallback) => {
     // Set up a new EventSource connection
-    const eventSource = new EventSource(`http://localhost:8016/api/feeds/${tag}`);
+    const eventSource = new EventSource(clientConfig.applicationUri + `/api/feeds/${tag}`);
 
     // Add event listener for the 'data' event
     eventSource.addEventListener('data', (event) => {
