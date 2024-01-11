@@ -21,7 +21,7 @@ func CreateFeedRepository(configuration config.Configuration) (FeedRepository, e
 	case config.InMemory:
 		return &InMemoryFeedRepository{}, nil
 	case config.Persistent:
-		return nil, errors.New("persistent mode not implemented")
+		return NewPersistentFeedRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}
