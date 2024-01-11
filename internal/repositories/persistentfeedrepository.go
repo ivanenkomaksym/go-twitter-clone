@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"twitter-clone/internal/config"
@@ -13,7 +14,8 @@ import (
 )
 
 type PersistentFeedRepository struct {
-	client *mongo.Client
+	client          *mongo.Client
+	feedsCollection *mongo.Collection
 }
 
 func NewPersistentFeedRepository(configuration config.Configuration) (*PersistentFeedRepository, error) {
@@ -47,20 +49,59 @@ func (repo *PersistentFeedRepository) init(configuration config.Configuration) e
 	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
 
 	repo.client = client
+	repo.feedsCollection = client.Database(configuration.FeedsStorage.DatabaseName).Collection(configuration.FeedsStorage.CollectionName)
 
 	return nil
 }
 
 func (repo *PersistentFeedRepository) CreateFeed(name string) error {
+	_, err := repo.GetFeedByName(name)
+	if err != nil {
+		return err
+	}
+
+	feed := models.Feed{
+		Name:   name,
+		Tweets: []models.Tweet{},
+	}
+
+	insertOneResult, err := repo.feedsCollection.InsertOne(context.Background(), feed)
+	if err != nil {
+		return err
+	}
+
+	if insertOneResult.InsertedID == nil {
+		return errors.New("failed to insert object")
+	}
+
 	return nil
 }
 
 func (repo *PersistentFeedRepository) GetFeeds() ([]models.Feed, error) {
 	var feeds []models.Feed
+
+	cursor, err := repo.feedsCollection.Find(context.Background(), bson.D{})
+	if err != nil {
+		return feeds, err
+	}
+
+	if err = cursor.All(context.Background(), &feeds); err != nil {
+		panic(err)
+	}
+
 	return feeds, nil
 }
 
 func (repo *PersistentFeedRepository) GetFeedByName(name string) (*models.Feed, error) {
+	filter := bson.D{{Key: "name", Value: name}}
+
+	var result models.Feed
+	var foundResult = repo.feedsCollection.FindOne(context.Background(), filter)
+	if foundResult.Err() == nil {
+		foundResult.Decode(&result)
+		return &result, nil
+	}
+
 	return nil, nil
 }
 

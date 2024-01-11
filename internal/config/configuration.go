@@ -62,9 +62,9 @@ type TweetsStorage struct {
 }
 
 type FeedsStorage struct {
-	ConnectionString    string
-	DatabaseName        string
-	FeedsCollectionName string
+	ConnectionString string
+	DatabaseName     string
+	CollectionName   string
 }
 
 type Configuration struct {
