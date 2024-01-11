@@ -67,7 +67,10 @@ func (repo *PersistentFeedRepository) CreateFeed(name string) error {
 
 	insertOneResult, err := repo.feedsCollection.InsertOne(context.Background(), feed)
 	if err != nil {
-		return err
+		if !isDuplicateError(err) {
+			return err
+		}
+		return nil
 	}
 
 	if insertOneResult.InsertedID == nil {
@@ -75,6 +78,15 @@ func (repo *PersistentFeedRepository) CreateFeed(name string) error {
 	}
 
 	return nil
+}
+
+func isDuplicateError(err error) bool {
+	mErr, ok := err.(mongo.WriteException)
+	if !ok {
+		return false
+	}
+
+	return mErr.WriteErrors[0].Code == 11000
 }
 
 func (repo *PersistentFeedRepository) GetFeeds() ([]models.Feed, error) {
@@ -93,7 +105,7 @@ func (repo *PersistentFeedRepository) GetFeeds() ([]models.Feed, error) {
 }
 
 func (repo *PersistentFeedRepository) GetFeedByName(name string) (*models.Feed, error) {
-	filter := bson.D{{Key: "name", Value: name}}
+	filter := bson.D{{Key: "_id", Value: name}}
 
 	var result models.Feed
 	var foundResult = repo.feedsCollection.FindOne(context.Background(), filter)
@@ -106,5 +118,28 @@ func (repo *PersistentFeedRepository) GetFeedByName(name string) (*models.Feed, 
 }
 
 func (repo *PersistentFeedRepository) AppendTweet(tweet models.Tweet) error {
-	return nil
+	if len(tweet.Tags) == 0 {
+		return nil
+	}
+
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": tweet.Tags,
+		},
+		"tweets.id": bson.M{
+			"$ne": tweet.ID,
+		},
+	}
+
+	update := bson.M{
+		"$push": bson.M{
+			"tweets": bson.M{
+				"$each":     bson.A{tweet},
+				"$position": 0,
+			},
+		},
+	}
+
+	_, err := repo.feedsCollection.UpdateMany(context.Background(), filter, update)
+	return err
 }

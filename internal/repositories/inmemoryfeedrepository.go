@@ -44,9 +44,9 @@ func (repo *InMemoryFeedRepository) AppendTweet(tweet models.Tweet) error {
 
 	for idx, _ := range repo.feeds {
 		// Check if the feed should get updated based on new tweet tags
-		if containsTag(tweet.Tags, repo.feeds[idx].Name) {
+		if ContainsTag(tweet.Tags, repo.feeds[idx].Name) {
 			// Check if the tweet is not already present in the feed
-			if !containsTweet(repo.feeds[idx].Tweets, tweet.ID) {
+			if !ContainsTweet(repo.feeds[idx].Tweets, tweet.ID) {
 				// Add the tweet to the feed
 				repo.feeds[idx].Tweets = append(repo.feeds[idx].Tweets, tweet)
 			}
@@ -54,24 +54,4 @@ func (repo *InMemoryFeedRepository) AppendTweet(tweet models.Tweet) error {
 	}
 
 	return nil
-}
-
-// containsTag checks if a given tag is present in the tags slice
-func containsTag(tags []string, tag string) bool {
-	for _, t := range tags {
-		if t == tag {
-			return true
-		}
-	}
-	return false
-}
-
-// containsTweet checks if a given tweet ID is present in the tweets slice
-func containsTweet(tweets []models.Tweet, tweetId string) bool {
-	for _, t := range tweets {
-		if t.ID == tweetId {
-			return true
-		}
-	}
-	return false
 }
