@@ -72,4 +72,5 @@ type Configuration struct {
 	ApiServer     ApiServer
 	TweetsStorage TweetsStorage
 	FeedsStorage  FeedsStorage
+	NATSUrl       string
 }

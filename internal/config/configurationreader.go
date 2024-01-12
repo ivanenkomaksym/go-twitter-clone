@@ -25,5 +25,9 @@ func ReadConfiguration() Configuration {
 		configuration.ApiServer.ApplicationUrl = apiServerApplicationUrlStringEnvVar
 	}
 
+	if natsUrlStringEnvVar := os.Getenv("NATSUrl"); natsUrlStringEnvVar != "" {
+		configuration.NATSUrl = natsUrlStringEnvVar
+	}
+
 	return configuration
 }

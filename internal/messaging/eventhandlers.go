@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"time"
+	"twitter-clone/internal/config"
 	"twitter-clone/internal/repositories"
 
 	"github.com/ThreeDotsLabs/watermill"
@@ -20,6 +21,7 @@ const (
 )
 
 func SetupMessageRouter(
+	configuration config.Configuration,
 	feedRepo repositories.FeedRepository,
 	logger watermill.LoggerAdapter,
 ) (message.Publisher, message.Subscriber, error) {
@@ -29,7 +31,7 @@ func SetupMessageRouter(
 	}
 	router.AddMiddleware(middleware.Recoverer)
 
-	natsURL := stan.NatsURL("nats://localhost:4222")
+	natsURL := stan.NatsURL(configuration.NATSUrl)
 	pub, err := nats.NewStreamingPublisher(nats.StreamingPublisherConfig{
 		ClusterID:   "test-cluster",
 		ClientID:    "publisher",

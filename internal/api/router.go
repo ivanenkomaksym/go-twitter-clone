@@ -21,7 +21,7 @@ import (
 func StartRouter(configuration config.Configuration, tweetRepo repositories.TweetRepository, feedRepo repositories.FeedRepository) {
 	logger := watermill.NewStdLogger(false, false)
 
-	pub, sub, err := messaging.SetupMessageRouter(feedRepo, logger)
+	pub, sub, err := messaging.SetupMessageRouter(configuration, feedRepo, logger)
 	if err != nil {
 		panic(err)
 	}
