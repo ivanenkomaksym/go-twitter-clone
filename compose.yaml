@@ -8,12 +8,43 @@
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
 services:
-  server:
+  go-twitter-clone-server:
     build:
       context: .
       target: final
+    container_name: twitter-clone-server
+    environment:
+      - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
+      - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
+      - "NATSUrl=nats://twitter-nats:4222"
+      - "ApiServer:ApplicationUrl=0.0.0.0:80"
     ports:
       - 80:80
+    links: 
+      - mysql:mysql
+
+  mysql:
+    image: mysql:latest
+    container_name: twitter-mysql
+    environment:
+      - "MYSQL_ROOT_PASSWORD=my-secret-pw"
+      - "MYSQL_DATABASE=TweetsDb"
+      - "MYSQL_USER=myuser"
+      - "MYSQL_PASSWORD=mypassword"
+    ports:
+      - 3306:3306
+
+  mongo:
+    image: mongo
+    container_name: twitter-mongo
+    ports:
+      - 27017:27017
+
+  nats:
+    image: nats-streaming
+    container_name: twitter-nats
+    ports:
+      - 4222:4222
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to
