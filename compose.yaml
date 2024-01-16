@@ -19,9 +19,18 @@ services:
       - "NATSUrl=nats://twitter-nats:4222"
       - "ApiServer:ApplicationUrl=0.0.0.0:80"
     ports:
-      - 80:80
+      - 8016:8016
     links: 
       - mysql:mysql
+
+  go-twitter-clone-client:
+    build:
+      context: ./twitter-clone-client
+    container_name: twitter-clone-client
+    environment:
+      - "NODE_ENV=production"
+    ports:
+      - 3000:3000
 
   mysql:
     image: mysql:latest
