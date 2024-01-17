@@ -17,7 +17,7 @@ services:
       - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"
-      - "ApiServer:ApplicationUrl=0.0.0.0:80"
+      - "ApiServer:ApplicationUrl=0.0.0.0:8016"
     ports:
       - 8016:8016
     links: 
@@ -27,8 +27,6 @@ services:
     build:
       context: ./twitter-clone-client
     container_name: twitter-clone-client
-    environment:
-      - "NODE_ENV=production"
     ports:
       - 3000:3000
 
