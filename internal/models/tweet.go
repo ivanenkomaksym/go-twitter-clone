@@ -33,5 +33,4 @@ type Tweet struct {
 	Author    string         `json:"author" bson:"author"`
 	Tags      []string       `json:"tags" bson:"tags"`
 	CreatedAt MySQLTimestamp `json:"created_at" bson:"created_at"`
-	Likes     []Like         `json:"likes" bson:"likes"`
 }
