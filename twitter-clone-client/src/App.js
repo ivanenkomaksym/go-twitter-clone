@@ -1,12 +1,19 @@
 // App.js
 import React from 'react';
+import { Routes, Route } from 'react-router-dom'
 import TweetForm from './components/TweetForm';
+import Login from './components/Login';
+import Nav from "./components/Nav"
 import './App.css';
 
 function App() {
   return (
     <div className="app">
-      <TweetForm />
+      <Nav />
+      <Routes>        
+        <Route path="/" element={<TweetForm />} />
+        <Route path="/account/login" element={<Login />} />
+      </Routes>
     </div>
   );
 }
