@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"time"
+	"twitter-clone/internal/authn"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/models"
@@ -87,6 +88,8 @@ func (router Router) Mux() *chi.Mux {
 	allFeedsHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
 	r.Route("/api", func(r chi.Router) {
+		r.Get("/auth/google/login", authn.OauthGoogleLogin)
+		r.Get("/auth/google/callback", authn.OauthGoogleCallback)
 		r.Post("/tweets", router.CreateTweet)
 		r.Get("/tweets", allTweetsHandler)
 		r.Get("/tweets/{tweetId}", tweetHandler)
