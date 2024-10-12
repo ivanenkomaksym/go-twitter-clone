@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+
+	"golang.org/x/oauth2/google"
 )
 
 //go:embed appsettings.json
@@ -13,6 +15,9 @@ var appsettingsContent []byte
 func ReadConfiguration() Configuration {
 	configuration := Configuration{}
 	json.Unmarshal(appsettingsContent, &configuration)
+
+	// Set default google endpoints
+	configuration.OAuth2.Endpoint = google.Endpoint
 
 	if tweetsStorageConnectionStringEnvVar := os.Getenv("TweetsStorage:ConnectionString"); tweetsStorageConnectionStringEnvVar != "" {
 		log.Println("Overriding TweetsStorage:ConnectionString from environment variable: ", tweetsStorageConnectionStringEnvVar)

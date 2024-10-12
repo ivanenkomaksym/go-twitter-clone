@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"golang.org/x/oauth2"
 )
 
 type Mode uint8
@@ -73,4 +75,5 @@ type Configuration struct {
 	TweetsStorage TweetsStorage
 	FeedsStorage  FeedsStorage
 	NATSUrl       string
+	OAuth2        oauth2.Config
 }

@@ -27,12 +27,17 @@ func StartRouter(configuration config.Configuration, tweetRepo repositories.Twee
 		panic(err)
 	}
 
+	oauth2Router := authn.OAuth2Router{
+		Config: configuration,
+	}
+
 	httpRouter := Router{
-		Subscriber: sub,
-		Publisher:  Publisher{Publisher: pub},
-		TweetRepo:  tweetRepo,
-		FeedRepo:   feedRepo,
-		Logger:     logger,
+		OAuth2Router: oauth2Router,
+		Subscriber:   sub,
+		Publisher:    Publisher{Publisher: pub},
+		TweetRepo:    tweetRepo,
+		FeedRepo:     feedRepo,
+		Logger:       logger,
 	}
 
 	mux := httpRouter.Mux()
@@ -44,11 +49,12 @@ func StartRouter(configuration config.Configuration, tweetRepo repositories.Twee
 }
 
 type Router struct {
-	Subscriber message.Subscriber
-	Publisher  Publisher
-	TweetRepo  repositories.TweetRepository
-	FeedRepo   repositories.FeedRepository
-	Logger     watermill.LoggerAdapter
+	OAuth2Router authn.OAuth2Router
+	Subscriber   message.Subscriber
+	Publisher    Publisher
+	TweetRepo    repositories.TweetRepository
+	FeedRepo     repositories.FeedRepository
+	Logger       watermill.LoggerAdapter
 }
 
 func (router Router) Mux() *chi.Mux {
@@ -87,9 +93,12 @@ func (router Router) Mux() *chi.Mux {
 	allTweetsHandler := sseRouter.AddHandler(messaging.TweetUpdatedTopic, allTweetsStream)
 	allFeedsHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
+	r.Route("/", func(r chi.Router) {
+		r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
+		r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
+	})
+
 	r.Route("/api", func(r chi.Router) {
-		r.Get("/auth/google/login", authn.OauthGoogleLogin)
-		r.Get("/auth/google/callback", authn.OauthGoogleCallback)
 		r.Post("/tweets", router.CreateTweet)
 		r.Get("/tweets", allTweetsHandler)
 		r.Get("/tweets/{tweetId}", tweetHandler)
