@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import { useLocation } from 'react-router-dom'
 import { useNavigate  } from 'react-router-dom';
 import NavStyles from "./Nav.module.css"
+import {loadUserFromLocalStorage} from "../authhandlers.js"
 
 function Nav() {
     const [userData, setUserData] = useState(null);
@@ -11,7 +12,7 @@ function Nav() {
     const navigate = useNavigate (); // Get the history object
 
     useEffect(() => {
-        const localUser = JSON.parse(localStorage.getItem("user_info"));
+        const localUser = loadUserFromLocalStorage();
         if (localUser) {
             setUserData(localUser);
         } else {
