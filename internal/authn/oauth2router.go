@@ -4,11 +4,13 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"twitter-clone/internal/config"
+	"twitter-clone/internal/models"
 
 	"golang.org/x/oauth2"
 )
@@ -50,6 +52,49 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 	http.Redirect(w, r, router.Config.RedirectURI, http.StatusFound)
 
 	fmt.Fprintf(w, "UserInfo: %s\n", data.Contents)
+}
+
+func (router OAuth2Router) OauthUserInfo(w http.ResponseWriter, r *http.Request) {
+	// Get the id_token from the HttpOnly cookie
+	cookie, err := r.Cookie("id_token")
+	if err != nil {
+		http.Error(w, "Unauthorized: No id_token found", http.StatusUnauthorized)
+		return
+	}
+
+	// Prepare the request to Google's tokeninfo endpoint
+	url := fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s", cookie.Value)
+	resp, err := http.Get(url)
+	if err != nil {
+		http.Error(w, "Failed to validate id_token", http.StatusInternalServerError)
+		return
+	}
+	defer resp.Body.Close()
+
+	// Read the response body
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		http.Error(w, "Failed to read response from Google", http.StatusInternalServerError)
+		return
+	}
+
+	// Parse the response body (which contains user info)
+	var userInfo map[string]interface{}
+	if err := json.Unmarshal(body, &userInfo); err != nil {
+		http.Error(w, "Failed to parse user info", http.StatusInternalServerError)
+		return
+	}
+
+	user := models.User{
+		FirstName: userInfo["given_name"].(string),
+		LastName:  userInfo["family_name"].(string),
+		Email:     userInfo["email"].(string),
+		Picture:   userInfo["picture"].(string),
+	}
+
+	// Return the User info as JSON
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(user)
 }
 
 func (router OAuth2Router) getUserDataFromGoogle(code string) (*AuthenticationResult, error) {
