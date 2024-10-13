@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"twitter-clone/internal/config"
+	"twitter-clone/internal/extensions"
 	"twitter-clone/internal/models"
 
 	"golang.org/x/oauth2"
@@ -55,6 +56,7 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 }
 
 func (router OAuth2Router) OauthUserInfo(w http.ResponseWriter, r *http.Request) {
+	extensions.EnableCors(&w, router.Config)
 	// Get the id_token from the HttpOnly cookie
 	cookie, err := r.Cookie("id_token")
 	if err != nil {

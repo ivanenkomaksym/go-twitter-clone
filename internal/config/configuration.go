@@ -77,4 +77,5 @@ type Configuration struct {
 	NATSUrl       string
 	OAuth2        oauth2.Config
 	RedirectURI   string
+	AllowOrigin   string // When using credentials (like cookies or HTTP authentication), CORS header Access-Control-Allow-Origin cannot be set to *
 }
