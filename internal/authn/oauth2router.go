@@ -17,6 +17,11 @@ type OAuth2Router struct {
 	Config config.Configuration
 }
 
+type AuthenticationResult struct {
+	Contents []byte
+	IdToken  string
+}
+
 func (router OAuth2Router) OauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	oauthState := router.generateStateOauthCookie(w)
 	u := router.Config.OAuth2.AuthCodeURL(oauthState, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
@@ -30,10 +35,24 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
-	fmt.Fprintf(w, "UserInfo: %s\n", data)
+
+	// Set the token in an HTTP-only, secure cookie
+	// Additionally token could be encrypted with AES encryption
+	http.SetCookie(w, &http.Cookie{
+		Name:     "id_token",
+		Value:    data.IdToken,
+		HttpOnly: true,                 // Prevent JavaScript access
+		Secure:   true,                 // Ensure it's sent only over HTTPS
+		SameSite: http.SameSiteLaxMode, // Helps mitigate CSRF
+	})
+
+	// Redirect to the frontend or some protected page
+	http.Redirect(w, r, router.Config.RedirectURI, http.StatusFound)
+
+	fmt.Fprintf(w, "UserInfo: %s\n", data.Contents)
 }
 
-func (router OAuth2Router) getUserDataFromGoogle(code string) ([]byte, error) {
+func (router OAuth2Router) getUserDataFromGoogle(code string) (*AuthenticationResult, error) {
 	// Use code to get token and get user info from Google.
 	token, err := router.Config.OAuth2.Exchange(context.Background(), code)
 	if err != nil {
@@ -50,10 +69,15 @@ func (router OAuth2Router) getUserDataFromGoogle(code string) ([]byte, error) {
 		return nil, fmt.Errorf("failed read response: %s", err.Error())
 	}
 
-	log.Println(contents)
-	log.Println(token)
+	log.Println("contents: ", contents)
+	log.Println("token: ", token)
 
-	return contents, nil
+	result := AuthenticationResult{
+		Contents: contents,
+		IdToken:  token.Extra("id_token").(string),
+	}
+
+	return &result, nil
 }
 
 func (router OAuth2Router) generateStateOauthCookie(w http.ResponseWriter) string {

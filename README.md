@@ -10,6 +10,7 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 * Utilizes popular database and  message broker technologies, including MySQL, Mongo and NATS.
 * Using appsettings in Go applications.
 * Includes Dockerfiles and Docker Compose configuration for containerizing the sample microservices.
+* Supports basic Google OAuth2
 
 ![Alt text](docs/architecture.png?raw=true "Application architecture")
 
@@ -30,3 +31,4 @@ This command launches the service along with its dependencies defined in the doc
 
 # References
 [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events)
+[Google OAuth 2.0 and Golang](https://medium.com/@_RR/google-oauth-2-0-and-golang-4cc299f8c1ed)

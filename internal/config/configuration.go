@@ -76,4 +76,5 @@ type Configuration struct {
 	FeedsStorage  FeedsStorage
 	NATSUrl       string
 	OAuth2        oauth2.Config
+	RedirectURI   string
 }
