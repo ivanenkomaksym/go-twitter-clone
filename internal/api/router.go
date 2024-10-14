@@ -62,13 +62,10 @@ func (router Router) Mux() *chi.Mux {
 
 	// Basic CORS
 	r.Use(cors.Handler(cors.Options{
-		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
-		AllowedOrigins: []string{"https://*", "http://*"},
-		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
+		AllowedOrigins:   []string{router.OAuth2Router.Config.AllowOrigin},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
-		AllowCredentials: false,
+		AllowCredentials: true,
 		MaxAge:           300, // Maximum value not ignored by any of major browsers
 	}))
 
@@ -122,6 +119,11 @@ func (router Router) Mux() *chi.Mux {
 }
 
 func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
+	user := authn.ValidateAuthentication(w, r)
+	if user == nil {
+		return
+	}
+
 	var newTweet models.Tweet
 	err := render.Decode(r, &newTweet)
 	if err != nil {
@@ -149,6 +151,11 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
+	user := authn.ValidateAuthentication(w, r)
+	if user == nil {
+		return
+	}
+
 	tweetId := chi.URLParam(r, "tweetId")
 	var deleted = router.TweetRepo.DeleteTweet(tweetId)
 

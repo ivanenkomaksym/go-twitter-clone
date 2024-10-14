@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"twitter-clone/internal/authn"
 	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/repositories"
 
@@ -17,6 +18,11 @@ type FeedStreamAdapter struct {
 }
 
 func (f FeedStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
+	user := authn.ValidateAuthentication(w, r)
+	if user == nil {
+		return
+	}
+
 	feedName := chi.URLParam(r, "name")
 
 	feed, err := f.repo.GetFeedByName(feedName)
@@ -51,6 +57,11 @@ type TweetStreamAdapter struct {
 }
 
 func (p TweetStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
+	user := authn.ValidateAuthentication(w, r)
+	if user == nil {
+		return
+	}
+
 	tweetID := chi.URLParam(r, "tweetId")
 
 	tweet := p.repo.GetTweetById(tweetID)
@@ -89,6 +100,11 @@ type AllFeedsStreamAdapter struct {
 }
 
 func (f AllFeedsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
+	user := authn.ValidateAuthentication(w, r)
+	if user == nil {
+		return nil, false
+	}
+
 	feeds, err := f.repo.GetFeeds()
 	if err != nil {
 		logAndWriteError(f.logger, w, err)
