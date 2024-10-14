@@ -95,6 +95,7 @@ func (router Router) Mux() *chi.Mux {
 
 	r.Route("/", func(r chi.Router) {
 		r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
+		r.Get("/auth/google/logout", router.OAuth2Router.OauthGoogleLogout)
 		r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
 		r.Get("/auth/google/userinfo", router.OAuth2Router.OauthUserInfo)
 	})

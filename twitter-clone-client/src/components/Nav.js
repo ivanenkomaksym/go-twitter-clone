@@ -2,14 +2,13 @@ import React from "react";
 import {Link} from "react-router-dom"
 import {useEffect, useState} from "react";
 import { useLocation } from 'react-router-dom'
-import { useNavigate  } from 'react-router-dom';
 import NavStyles from "./Nav.module.css"
 import {loadUserFromLocalStorage} from "../authhandlers.js"
+import { logOutAuthorizeUrl } from "../config.js"
 
 function Nav() {
     const [userData, setUserData] = useState(null);
     const location = useLocation();
-    const navigate = useNavigate (); // Get the history object
 
     useEffect(() => {
         const localUser = loadUserFromLocalStorage();
@@ -22,8 +21,7 @@ function Nav() {
 
     function handleLogOut(e) {
         e.preventDefault();
-        // TODO: Implement it
-        navigate('/'); // Navigate to the home page after logging out
+        window.location.assign(logOutAuthorizeUrl);
     }
 
     return (

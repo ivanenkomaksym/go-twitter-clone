@@ -31,6 +31,17 @@ func (router OAuth2Router) OauthGoogleLogin(w http.ResponseWriter, r *http.Reque
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
+func (router OAuth2Router) OauthGoogleLogout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:   "id_token",
+		Value:  "",
+		MaxAge: -1, // This deletes the cookie
+	})
+
+	// Redirect to the frontend or some protected page
+	http.Redirect(w, r, router.Config.RedirectURI, http.StatusFound)
+}
+
 func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
 	data, err := router.getUserDataFromGoogle(r.FormValue("code"))
 	if err != nil {

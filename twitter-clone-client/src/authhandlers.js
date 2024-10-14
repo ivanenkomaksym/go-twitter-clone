@@ -11,6 +11,11 @@ export async function signIn() {
         });
 
         const response = await instance.get(userInfoUrl)
+        if (response.status === 401) {
+            clearUserFromLocalStorage(); // Clear user data on 401 Unauthorized
+            return
+        }
+
         const data = response.data
 
         const user = new User(
@@ -25,6 +30,7 @@ export async function signIn() {
         saveUserToLocalStorage(user);
     }
     catch (err) {
+        clearUserFromLocalStorage(); // Clear user data on 401 Unauthorized
         console.log(err);
     }
 }
@@ -35,4 +41,8 @@ export function saveUserToLocalStorage(user) {
 
 export function loadUserFromLocalStorage() {
     return JSON.parse(localStorage.getItem("user_info"));
+}
+
+export function clearUserFromLocalStorage() {
+    localStorage.removeItem("user_info");
 }
