@@ -14,6 +14,8 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 
 ![Alt text](docs/architecture.png?raw=true "Application architecture")
 
+![Alt text](docs/authn.png?raw=true "Authentication")
+
 # Documentation
 
 ## Settings
