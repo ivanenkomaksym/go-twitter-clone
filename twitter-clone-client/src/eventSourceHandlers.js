@@ -2,7 +2,9 @@ import config from './common';
 
 // Function to set up EventSource for data changes
 export const setUpFeedsEventSource = (setDataCallback) => {
-    const eventSource = new EventSource(config.applicationUri + '/api/feeds');
+    const eventSource = new EventSource(config.applicationUri + '/api/feeds', {
+      withCredentials: true
+    });
   
     // Add event listener for the 'data' event
     eventSource.addEventListener('data', (event) => {
@@ -22,7 +24,9 @@ export const setUpFeedsEventSource = (setDataCallback) => {
 // Function to set up EventSource for data changes
 export const setUpFeedsTagEventSource = (tag, setDataCallback) => {
     // Set up a new EventSource connection
-    const eventSource = new EventSource(config.applicationUri + `/api/feeds/${tag}`);
+    const eventSource = new EventSource(config.applicationUri + `/api/feeds/${tag}`, {
+      withCredentials: true
+    });
 
     // Add event listener for the 'data' event
     eventSource.addEventListener('data', (event) => {
