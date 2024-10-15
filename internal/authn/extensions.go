@@ -32,17 +32,23 @@ func ValidateAuthentication(w http.ResponseWriter, r *http.Request) *models.User
 	}
 
 	// Parse the response body (which contains user info)
-	var userInfo map[string]interface{}
-	if err := json.Unmarshal(body, &userInfo); err != nil {
+	var response map[string]interface{}
+	if err := json.Unmarshal(body, &response); err != nil {
 		http.Error(w, "Failed to parse user info", http.StatusUnauthorized)
 		return nil
 	}
 
+	errordesc, haserror := response["error_description"]
+	if haserror {
+		http.Error(w, errordesc.(string), http.StatusUnauthorized)
+		return nil
+	}
+
 	user := models.User{
-		FirstName: userInfo["given_name"].(string),
-		LastName:  userInfo["family_name"].(string),
-		Email:     userInfo["email"].(string),
-		Picture:   userInfo["picture"].(string),
+		FirstName: response["given_name"].(string),
+		LastName:  response["family_name"].(string),
+		Email:     response["email"].(string),
+		Picture:   response["picture"].(string),
 	}
 
 	return &user
