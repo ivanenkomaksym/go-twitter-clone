@@ -19,7 +19,10 @@ import (
 	watermillHTTP "github.com/ThreeDotsLabs/watermill-http/pkg/http"
 )
 
-func StartRouter(configuration config.Configuration, tweetRepo repositories.TweetRepository, feedRepo repositories.FeedRepository) {
+func StartRouter(configuration config.Configuration,
+	tweetRepo repositories.TweetRepository,
+	feedRepo repositories.FeedRepository,
+	authenticationValidator authn.AuthenticationValidator) {
 	logger := watermill.NewStdLogger(false, false)
 
 	pub, sub, err := messaging.SetupMessageRouter(configuration, feedRepo, logger)
@@ -28,16 +31,20 @@ func StartRouter(configuration config.Configuration, tweetRepo repositories.Twee
 	}
 
 	oauth2Router := authn.OAuth2Router{
-		Config: configuration,
+		Authentication:          configuration.Authentication,
+		RedirectURI:             configuration.RedirectURI,
+		AuthenticationValidator: authenticationValidator,
 	}
 
 	httpRouter := Router{
-		OAuth2Router: oauth2Router,
-		Subscriber:   sub,
-		Publisher:    Publisher{Publisher: pub},
-		TweetRepo:    tweetRepo,
-		FeedRepo:     feedRepo,
-		Logger:       logger,
+		Config:                  configuration,
+		AuthenticationValidator: authenticationValidator,
+		OAuth2Router:            oauth2Router,
+		Subscriber:              sub,
+		Publisher:               Publisher{Publisher: pub},
+		TweetRepo:               tweetRepo,
+		FeedRepo:                feedRepo,
+		Logger:                  logger,
 	}
 
 	mux := httpRouter.Mux()
@@ -49,12 +56,14 @@ func StartRouter(configuration config.Configuration, tweetRepo repositories.Twee
 }
 
 type Router struct {
-	OAuth2Router authn.OAuth2Router
-	Subscriber   message.Subscriber
-	Publisher    Publisher
-	TweetRepo    repositories.TweetRepository
-	FeedRepo     repositories.FeedRepository
-	Logger       watermill.LoggerAdapter
+	Config                  config.Configuration
+	AuthenticationValidator authn.AuthenticationValidator
+	OAuth2Router            authn.OAuth2Router
+	Subscriber              message.Subscriber
+	Publisher               Publisher
+	TweetRepo               repositories.TweetRepository
+	FeedRepo                repositories.FeedRepository
+	Logger                  watermill.LoggerAdapter
 }
 
 func (router Router) Mux() *chi.Mux {
@@ -62,7 +71,7 @@ func (router Router) Mux() *chi.Mux {
 
 	// Basic CORS
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{router.OAuth2Router.Config.AllowOrigin},
+		AllowedOrigins:   []string{router.Config.AllowOrigin},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		AllowCredentials: true,
@@ -80,22 +89,39 @@ func (router Router) Mux() *chi.Mux {
 		panic(err)
 	}
 
-	tweetStream := TweetStreamAdapter{repo: router.TweetRepo, logger: router.Logger}
-	feedStream := FeedStreamAdapter{repo: router.FeedRepo, logger: router.Logger}
-	allTweetsStream := AllTweetsStreamAdapter{repo: router.TweetRepo}
-	allFeedsStream := AllFeedsStreamAdapter{repo: router.FeedRepo, logger: router.Logger}
+	tweetStream := TweetStreamAdapter{
+		repo:                    router.TweetRepo,
+		authenticationValidator: router.AuthenticationValidator,
+		logger:                  router.Logger,
+	}
+	feedStream := FeedStreamAdapter{
+		repo:                    router.FeedRepo,
+		authenticationValidator: router.AuthenticationValidator,
+		logger:                  router.Logger,
+	}
+	allTweetsStream := AllTweetsStreamAdapter{
+		repo:                    router.TweetRepo,
+		authenticationValidator: router.AuthenticationValidator,
+	}
+	allFeedsStream := AllFeedsStreamAdapter{
+		repo:                    router.FeedRepo,
+		authenticationValidator: router.AuthenticationValidator,
+		logger:                  router.Logger,
+	}
 
 	tweetHandler := sseRouter.AddHandler(messaging.TweetCreatedTopic, tweetStream)
 	feedHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, feedStream)
 	allTweetsHandler := sseRouter.AddHandler(messaging.TweetUpdatedTopic, allTweetsStream)
 	allFeedsHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
-	r.Route("/", func(r chi.Router) {
-		r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
-		r.Get("/auth/google/logout", router.OAuth2Router.OauthGoogleLogout)
-		r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
-		r.Get("/auth/google/userinfo", router.OAuth2Router.OauthUserInfo)
-	})
+	if router.Config.Authentication.Enable {
+		r.Route("/", func(r chi.Router) {
+			r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
+			r.Get("/auth/google/logout", router.OAuth2Router.OauthGoogleLogout)
+			r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
+			r.Get("/auth/google/userinfo", router.OAuth2Router.OauthUserInfo)
+		})
+	}
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/tweets", router.CreateTweet)
@@ -119,7 +145,7 @@ func (router Router) Mux() *chi.Mux {
 }
 
 func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
-	user := authn.ValidateAuthentication(w, r)
+	user := router.AuthenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
 	}
@@ -151,7 +177,7 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
-	user := authn.ValidateAuthentication(w, r)
+	user := router.AuthenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
 	}

@@ -13,21 +13,22 @@ import (
 )
 
 type FeedStreamAdapter struct {
-	repo   repositories.FeedRepository
-	logger watermill.LoggerAdapter
+	repo                    repositories.FeedRepository
+	authenticationValidator authn.AuthenticationValidator
+	logger                  watermill.LoggerAdapter
 }
 
-func (f FeedStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
-	user := authn.ValidateAuthentication(w, r)
+func (adapter FeedStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
+	user := adapter.authenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
 	}
 
 	feedName := chi.URLParam(r, "name")
 
-	feed, err := f.repo.GetFeedByName(feedName)
+	feed, err := adapter.repo.GetFeedByName(feedName)
 	if err != nil {
-		logAndWriteError(f.logger, w, err)
+		logAndWriteError(adapter.logger, w, err)
 		return nil, false
 	}
 
@@ -52,19 +53,20 @@ func (f FeedStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok b
 }
 
 type TweetStreamAdapter struct {
-	repo   repositories.TweetRepository
-	logger watermill.LoggerAdapter
+	repo                    repositories.TweetRepository
+	authenticationValidator authn.AuthenticationValidator
+	logger                  watermill.LoggerAdapter
 }
 
-func (p TweetStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
-	user := authn.ValidateAuthentication(w, r)
+func (adapter TweetStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (response interface{}, ok bool) {
+	user := adapter.authenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
 	}
 
 	tweetID := chi.URLParam(r, "tweetId")
 
-	tweet := p.repo.GetTweetById(tweetID)
+	tweet := adapter.repo.GetTweetById(tweetID)
 	if tweet == nil {
 		return nil, false
 	}
@@ -72,7 +74,7 @@ func (p TweetStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) 
 	return tweet, true
 }
 
-func (p TweetStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok bool) {
+func (adapter TweetStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok bool) {
 	postUpdated := messaging.TweetUpdated{}
 
 	err := json.Unmarshal(msg.Payload, &postUpdated)
@@ -95,19 +97,20 @@ type AllFeedsResponse struct {
 }
 
 type AllFeedsStreamAdapter struct {
-	repo   repositories.FeedRepository
-	logger watermill.LoggerAdapter
+	repo                    repositories.FeedRepository
+	authenticationValidator authn.AuthenticationValidator
+	logger                  watermill.LoggerAdapter
 }
 
-func (f AllFeedsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
-	user := authn.ValidateAuthentication(w, r)
+func (adapter AllFeedsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
+	user := adapter.authenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return nil, false
 	}
 
-	feeds, err := f.repo.GetFeeds()
+	feeds, err := adapter.repo.GetFeeds()
 	if err != nil {
-		logAndWriteError(f.logger, w, err)
+		logAndWriteError(adapter.logger, w, err)
 		return nil, false
 	}
 
@@ -130,11 +133,17 @@ func (f AllFeedsStreamAdapter) Validate(r *http.Request, msg *message.Message) (
 }
 
 type AllTweetsStreamAdapter struct {
-	repo repositories.TweetRepository
+	repo                    repositories.TweetRepository
+	authenticationValidator authn.AuthenticationValidator
 }
 
-func (f AllTweetsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
-	tweets := f.repo.GetTweets()
+func (adapter AllTweetsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
+	user := adapter.authenticationValidator.ValidateAuthentication(w, r)
+	if user == nil {
+		return nil, false
+	}
+
+	tweets := adapter.repo.GetTweets()
 	return tweets, true
 }
 

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"twitter-clone/internal/api"
+	"twitter-clone/internal/authn"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/repositories"
 )
@@ -22,5 +23,9 @@ func main() {
 		return
 	}
 
-	api.StartRouter(configuration, tweetRepo, feedRepo)
+	authenticationValidator := authn.AuthenticationValidator{
+		Authentication: configuration.Authentication,
+	}
+
+	api.StartRouter(configuration, tweetRepo, feedRepo, authenticationValidator)
 }

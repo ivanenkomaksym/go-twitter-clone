@@ -17,7 +17,9 @@ func ReadConfiguration() Configuration {
 	json.Unmarshal(appsettingsContent, &configuration)
 
 	// Set default google endpoints
-	configuration.OAuth2.Endpoint = google.Endpoint
+	if configuration.Authentication.Enable {
+		configuration.Authentication.OAuth2.Endpoint = google.Endpoint
+	}
 
 	if tweetsStorageConnectionStringEnvVar := os.Getenv("TweetsStorage:ConnectionString"); tweetsStorageConnectionStringEnvVar != "" {
 		log.Println("Overriding TweetsStorage:ConnectionString from environment variable: ", tweetsStorageConnectionStringEnvVar)

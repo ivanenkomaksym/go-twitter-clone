@@ -15,7 +15,9 @@ import (
 )
 
 type OAuth2Router struct {
-	Config config.Configuration
+	Authentication          config.Authentication
+	RedirectURI             string
+	AuthenticationValidator AuthenticationValidator
 }
 
 type AuthenticationResult struct {
@@ -25,7 +27,7 @@ type AuthenticationResult struct {
 
 func (router OAuth2Router) OauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
 	oauthState := router.generateStateOauthCookie(w)
-	u := router.Config.OAuth2.AuthCodeURL(oauthState, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	u := router.Authentication.OAuth2.AuthCodeURL(oauthState, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 }
 
@@ -38,7 +40,7 @@ func (router OAuth2Router) OauthGoogleLogout(w http.ResponseWriter, r *http.Requ
 	})
 
 	// Redirect to the frontend or some protected page
-	http.Redirect(w, r, router.Config.RedirectURI, http.StatusFound)
+	http.Redirect(w, r, router.RedirectURI, http.StatusFound)
 }
 
 func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
@@ -61,13 +63,13 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 	})
 
 	// Redirect to the frontend or some protected page
-	http.Redirect(w, r, router.Config.RedirectURI, http.StatusFound)
+	http.Redirect(w, r, router.RedirectURI, http.StatusFound)
 
 	fmt.Fprintf(w, "UserInfo: %s\n", data.Contents)
 }
 
 func (router OAuth2Router) OauthUserInfo(w http.ResponseWriter, r *http.Request) {
-	user := ValidateAuthentication(w, r)
+	user := router.AuthenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
 	}
@@ -79,7 +81,7 @@ func (router OAuth2Router) OauthUserInfo(w http.ResponseWriter, r *http.Request)
 
 func (router OAuth2Router) getUserDataFromGoogle(code string) (*AuthenticationResult, error) {
 	// Use code to get token and get user info from Google.
-	token, err := router.Config.OAuth2.Exchange(context.Background(), code)
+	token, err := router.Authentication.OAuth2.Exchange(context.Background(), code)
 	if err != nil {
 		return nil, fmt.Errorf("code exchange wrong: %s", err.Error())
 	}

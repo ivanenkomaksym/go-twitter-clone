@@ -69,13 +69,18 @@ type FeedsStorage struct {
 	CollectionName   string
 }
 
+type Authentication struct {
+	Enable bool
+	OAuth2 oauth2.Config
+}
+
 type Configuration struct {
-	Mode          Mode
-	ApiServer     ApiServer
-	TweetsStorage TweetsStorage
-	FeedsStorage  FeedsStorage
-	NATSUrl       string
-	OAuth2        oauth2.Config
-	RedirectURI   string
-	AllowOrigin   string // When using credentials (like cookies or HTTP authentication), CORS header Access-Control-Allow-Origin cannot be set to *
+	Mode           Mode
+	ApiServer      ApiServer
+	TweetsStorage  TweetsStorage
+	FeedsStorage   FeedsStorage
+	NATSUrl        string
+	Authentication Authentication
+	RedirectURI    string
+	AllowOrigin    string // When using credentials (like cookies or HTTP authentication), CORS header Access-Control-Allow-Origin cannot be set to *
 }

@@ -5,10 +5,19 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
 )
 
-func ValidateAuthentication(w http.ResponseWriter, r *http.Request) *models.User {
+type AuthenticationValidator struct {
+	Authentication config.Authentication
+}
+
+func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseWriter, r *http.Request) *models.User {
+	if !validator.Authentication.Enable {
+		return &models.User{IsAnonymous: true}
+	}
+
 	cookie, err := r.Cookie("id_token")
 	if err != nil {
 		http.Error(w, "Unauthorized: No id_token found", http.StatusUnauthorized)
@@ -45,10 +54,11 @@ func ValidateAuthentication(w http.ResponseWriter, r *http.Request) *models.User
 	}
 
 	user := models.User{
-		FirstName: response["given_name"].(string),
-		LastName:  response["family_name"].(string),
-		Email:     response["email"].(string),
-		Picture:   response["picture"].(string),
+		IsAnonymous: false,
+		FirstName:   response["given_name"].(string),
+		LastName:    response["family_name"].(string),
+		Email:       response["email"].(string),
+		Picture:     response["picture"].(string),
 	}
 
 	return &user
