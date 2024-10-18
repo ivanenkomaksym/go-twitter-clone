@@ -29,6 +29,14 @@ To run the service using Docker Compose, use the following command:
 docker-compose up
 ```
 
+# Testing
+
+To run all existing tests recursively execute in the root folder:
+
+```
+go test ./... -v
+```
+
 This command launches the service along with its dependencies defined in the docker-compose.yml file.
 
 # References
