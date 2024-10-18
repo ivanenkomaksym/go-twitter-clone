@@ -7,20 +7,52 @@ import * as apiHandlers from '../apihandlers';
 import * as eventSourceHandlers from '../eventSourceHandlers';
 import './TweetForm.css';
 import IsAuthnEnabled from '../useFeatureFlags.js';
+import { loadUserFromLocalStorage } from '../authhandlers.js';
 
 const TweetForm = () => {
     // Load hashtags from local storage on component mount
-    const [formData, setFormData] = useState({
-        title: '',
-        content: '',
-        author: ''
-    });
-
+    const [userInfo, setUserInfo] = useState(null);
+    const [isAuthenticated, setAuthenticated] = useState(false);
     const [tags, setTags] = useState([]);
     const [tweetTags, setTweetTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
     const [taggedTweets, setTaggedTweets] = useState([]);
     const [eventSource, setEventSource] = useState(null);
+
+    const isAuthEnabled = IsAuthnEnabled();
+    
+    useEffect(() => {
+        if (!isAuthEnabled)
+            setAuthenticated(true);
+        else
+            setAuthenticated(userInfo != null);
+    }, [isAuthEnabled]);
+
+    useEffect(() => {
+        const localUserInfo = loadUserFromLocalStorage();
+
+        console.log("userInfo: ", localUserInfo);
+        if (localUserInfo) {
+            setUserInfo(localUserInfo);
+        } else {
+            setUserInfo(null);
+        }
+    }, []);
+
+    const [formData, setFormData] = useState({
+        title: '',
+        content: '',
+        author: userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''
+    }, []);
+
+    useEffect(() => {
+        if (userInfo) {
+            setFormData(prevFormData => ({
+                ...prevFormData,
+                author: `${userInfo.firstName} ${userInfo.lastName}`
+            }));
+        }
+    }, [userInfo]);
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -93,28 +125,9 @@ const TweetForm = () => {
         });
     };
 
-    const isAuthnEnabled = IsAuthnEnabled();
-
-    const isAuthenticated = () => {
-        if (!isAuthnEnabled)
-            return true;
-
-        const userInfo = JSON.parse(localStorage.getItem('user_info'));
-        if (userInfo) {
-            const { expirationDate } = userInfo;
-            if (new Date(expirationDate) < new Date()) {
-                console.log("Clearing local storage due to token expiration");
-                localStorage.clear();
-                return false;
-            }
-            return true;
-        }
-        return false;
-    };
-
     return (
         <div className="container">
-            {isAuthenticated() ? (
+            {isAuthenticated ? (
                 <>
                     <div className="tweet-form-container">
                         <TagList tags={tags} handleTagClick={handleTagClick} />
@@ -133,7 +146,7 @@ const TweetForm = () => {
 
                             <div className="form-group">
                                 <label>Author:</label>
-                                <input type="text" name="author" value={formData.author} onChange={handleInputChange} />
+                                <input type="text" name="author" value={formData.author} onChange={handleInputChange} readOnly={isAuthEnabled} />
                             </div>
 
                             <button type="button" onClick={handleAddTweet}>Add tweet</button>
@@ -146,7 +159,7 @@ const TweetForm = () => {
                 <div className="welcomeMessage">
                     Welcome. <Link to="/account/login">Login</Link> to continue.
                 </div>
-            )};
+            )}
         </div>
     );
 }

@@ -1,5 +1,5 @@
 const featureFlags = {
-    authn: false
+    authn: true
 };
 
 export default featureFlags;
