@@ -20,6 +20,7 @@ type PersistentFeedRepository struct {
 
 func NewPersistentFeedRepository(configuration config.Configuration) (*PersistentFeedRepository, error) {
 	repo := &PersistentFeedRepository{}
+	initComplete := make(chan error)
 
 	// Initialize the database connection asynchronously
 	go func() {
@@ -27,7 +28,14 @@ func NewPersistentFeedRepository(configuration config.Configuration) (*Persisten
 		if err != nil {
 			log.Fatalf("Failed to initialize database: %v", err)
 		}
+		initComplete <- err // Send the result of the init to the channel
 	}()
+
+	// Wait for initialization to complete
+	err := <-initComplete
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize database: %v", err)
+	}
 
 	return repo, nil
 }
@@ -142,4 +150,16 @@ func (repo *PersistentFeedRepository) AppendTweet(tweet models.Tweet) error {
 
 	_, err := repo.feedsCollection.UpdateMany(context.Background(), filter, update)
 	return err
+}
+
+func (repo *PersistentFeedRepository) DeleteFeed(name string) bool {
+	filter := bson.D{{Key: "_id", Value: name}}
+
+	deleteResult, err := repo.feedsCollection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		log.Printf("Error deleting feed: %v", err)
+		return false
+	}
+
+	return deleteResult.DeletedCount > 0
 }

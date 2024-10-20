@@ -55,3 +55,16 @@ func (repo *InMemoryFeedRepository) AppendTweet(tweet models.Tweet) error {
 
 	return nil
 }
+
+func (repo *InMemoryFeedRepository) DeleteFeed(name string) bool {
+	removed := false
+	for i, feed := range repo.feeds {
+		if feed.Name == name {
+			repo.feeds = append(repo.feeds[:i], repo.feeds[i+1:]...)
+			removed = true
+			break
+		}
+	}
+
+	return removed
+}
