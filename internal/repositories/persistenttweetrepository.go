@@ -16,26 +16,52 @@ type PersistentTweetRepository struct {
 
 func NewPersistentTweetRepository(configuration config.Configuration) (*PersistentTweetRepository, error) {
 	repo := &PersistentTweetRepository{}
+	initComplete := make(chan error)
 
 	// Initialize the database connection asynchronously
 	go func() {
 		err := repo.init(configuration)
-		if err != nil {
-			log.Fatalf("Failed to initialize database: %v", err)
-		}
+		initComplete <- err // Send the result of the init to the channel
 	}()
+
+	// Wait for initialization to complete
+	err := <-initComplete
+	if err != nil {
+		return nil, fmt.Errorf("failed to initialize database: %v", err)
+	}
 
 	return repo, nil
 }
 
 func (repo *PersistentTweetRepository) init(configuration config.Configuration) error {
-	// Construct the full connection string
-	connString := fmt.Sprintf("%s/%s", configuration.TweetsStorage.ConnectionString, configuration.TweetsStorage.DatabaseName)
-	log.Println(connString)
-	// Open the database connection
+	// Get the connection string without the database name
+	connString := fmt.Sprintf("%s/", configuration.TweetsStorage.ConnectionString)
+	log.Println("Connecting without database:", connString)
+
+	// Open the database connection (without specifying a database)
 	db, err := sql.Open("mysql", connString)
 	if err != nil {
 		return err
+	}
+
+	// Check if the database exists
+	dbName := configuration.TweetsStorage.DatabaseName
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s", dbName))
+	if err != nil {
+		return fmt.Errorf("error creating database: %v", err)
+	}
+
+	// Now that the database exists, close the connection and reopen with the database name
+	err = db.Close()
+	if err != nil {
+		return fmt.Errorf("error closing connection: %v", err)
+	}
+
+	// Reconnect with the database specified
+	connStringWithDB := fmt.Sprintf("%s/%s", configuration.TweetsStorage.ConnectionString, dbName)
+	db, err = sql.Open("mysql", connStringWithDB)
+	if err != nil {
+		return fmt.Errorf("error reconnecting to database: %v", err)
 	}
 
 	// Ping the database to ensure connectivity
