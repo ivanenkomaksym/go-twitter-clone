@@ -52,7 +52,7 @@ jobs:
 
     - name: Wait for MongoDB to be ready
       run: |
-        until docker exec mongo mongo --eval "db.runCommand({ ping: 1 })" > /dev/null 2>&1; do
+        until docker exec twitter-mongo mongosh --eval "db.runCommand({ ping: 1 })"; do
           echo "Waiting for MongoDB to be ready..."
           sleep 2
         done
