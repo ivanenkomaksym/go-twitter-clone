@@ -50,13 +50,6 @@ jobs:
     - name: Build
       run: go build -v ./...
 
-    - name: Wait for MongoDB to be ready
-      run: |
-        until docker exec twitter-mongo mongosh --eval "db.runCommand({ ping: 1 })"; do
-          echo "Waiting for MongoDB to be ready..."
-          sleep 2
-        done
-
     - name: Wait for MySQL to be ready
       run: |
         until docker exec twitter-mysql-test mysqladmin ping --host=localhost --user=myuser --password=mypassword --silent; do
