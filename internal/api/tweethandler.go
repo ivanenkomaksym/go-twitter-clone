@@ -3,7 +3,7 @@ package api
 import (
 	"net/http"
 	"twitter-clone/internal/models"
-	"twitter-clone/internal/repositories"
+	repositories "twitter-clone/internal/repositories/tweet"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,18 +1,40 @@
 package repositories_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
+	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
-	"twitter-clone/internal/repositories"
+	repositories "twitter-clone/internal/repositories"
+	tweetrepo "twitter-clone/internal/repositories/tweet"
 
 	"github.com/stretchr/testify/assert"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func TestInMemoryTweetRepository(t *testing.T) {
-	// Initialize the repository
-	repo := repositories.InMemoryTweetRepository{}
+func setupTweetRepo() tweetrepo.TweetRepository {
+	// Setup the test database
+	configuration := config.Configuration{
+		Mode: config.Persistent,
+		TweetsStorage: config.TweetsStorage{
+			ConnectionString: "myuser:mypassword@tcp(127.0.0.1:3306)",
+			DatabaseName:     "TweetsDb",
+		},
+	}
 
+	repo, err := repositories.CreateTweetRepository(configuration)
+	if err != nil {
+		fmt.Println("Failed to create tweet repository: ", err)
+		return nil
+	}
+
+	return repo
+}
+
+func TestCreateTweet(t *testing.T) {
+	repo := setupTweetRepo()
 	// Create a tweet
 	tweet := models.Tweet{
 		ID:        "abc",
@@ -23,7 +45,7 @@ func TestInMemoryTweetRepository(t *testing.T) {
 		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
 	}
 
-	// Test CreateTweet
+	// Test the CreateTweet method
 	createdTweet := repo.CreateTweet(tweet)
 	assert.NotNil(t, createdTweet, "CreateTweet should return the created tweet")
 	assert.Equal(t, tweet.ID, createdTweet.ID, "Created tweet should have the same ID")

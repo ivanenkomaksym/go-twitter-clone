@@ -3,25 +3,27 @@ package repositories
 import (
 	"errors"
 	"twitter-clone/internal/config"
+	feedrepo "twitter-clone/internal/repositories/feed"
+	tweetrepo "twitter-clone/internal/repositories/tweet"
 )
 
-func CreateTweetRepository(configuration config.Configuration) (TweetRepository, error) {
+func CreateTweetRepository(configuration config.Configuration) (tweetrepo.TweetRepository, error) {
 	switch configuration.Mode {
 	case config.InMemory:
-		return &InMemoryTweetRepository{}, nil
+		return &tweetrepo.InMemoryTweetRepository{}, nil
 	case config.Persistent:
-		return NewPersistentTweetRepository(configuration)
+		return tweetrepo.NewPersistentTweetRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}
 }
 
-func CreateFeedRepository(configuration config.Configuration) (FeedRepository, error) {
+func CreateFeedRepository(configuration config.Configuration) (feedrepo.FeedRepository, error) {
 	switch configuration.Mode {
 	case config.InMemory:
-		return &InMemoryFeedRepository{}, nil
+		return &feedrepo.InMemoryFeedRepository{}, nil
 	case config.Persistent:
-		return NewPersistentFeedRepository(configuration)
+		return feedrepo.NewPersistentFeedRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}

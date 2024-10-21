@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 	"twitter-clone/internal/config"
-	"twitter-clone/internal/repositories"
+	repositories "twitter-clone/internal/repositories/feed"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill-nats/pkg/nats"

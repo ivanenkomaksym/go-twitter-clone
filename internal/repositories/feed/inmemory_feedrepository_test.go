@@ -2,7 +2,7 @@ package repositories_test
 
 import (
 	"testing"
-	"twitter-clone/internal/repositories"
+	repositories "twitter-clone/internal/repositories/feed"
 
 	"github.com/stretchr/testify/assert"
 )

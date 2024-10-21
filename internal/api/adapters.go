@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"twitter-clone/internal/authn"
 	"twitter-clone/internal/messaging"
-	"twitter-clone/internal/repositories"
+	feedrepo "twitter-clone/internal/repositories/feed"
+	repositories "twitter-clone/internal/repositories/tweet"
+	tweetrepo "twitter-clone/internal/repositories/tweet"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -13,7 +15,7 @@ import (
 )
 
 type FeedStreamAdapter struct {
-	repo                    repositories.FeedRepository
+	repo                    feedrepo.FeedRepository
 	authenticationValidator authn.AuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }
@@ -53,7 +55,7 @@ func (f FeedStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok b
 }
 
 type TweetStreamAdapter struct {
-	repo                    repositories.TweetRepository
+	repo                    tweetrepo.TweetRepository
 	authenticationValidator authn.AuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }
@@ -97,7 +99,7 @@ type AllFeedsResponse struct {
 }
 
 type AllFeedsStreamAdapter struct {
-	repo                    repositories.FeedRepository
+	repo                    feedrepo.FeedRepository
 	authenticationValidator authn.AuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }

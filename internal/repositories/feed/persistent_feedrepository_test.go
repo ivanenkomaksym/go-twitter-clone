@@ -6,12 +6,13 @@ import (
 	"time"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
-	"twitter-clone/internal/repositories"
+	repositories "twitter-clone/internal/repositories"
+	feedrepo "twitter-clone/internal/repositories/feed"
 
 	"github.com/stretchr/testify/assert"
 )
 
-func setupFeedRepo() repositories.FeedRepository {
+func setupFeedRepo() feedrepo.FeedRepository {
 	// Setup the test database
 	configuration := config.Configuration{
 		Mode: config.Persistent,

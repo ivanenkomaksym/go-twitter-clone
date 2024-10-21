@@ -8,7 +8,8 @@ import (
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/models"
-	"twitter-clone/internal/repositories"
+	feedrepo "twitter-clone/internal/repositories/feed"
+	tweetrepo "twitter-clone/internal/repositories/tweet"
 
 	"github.com/ThreeDotsLabs/watermill"
 	"github.com/ThreeDotsLabs/watermill/message"
@@ -20,8 +21,8 @@ import (
 )
 
 func StartRouter(configuration config.Configuration,
-	tweetRepo repositories.TweetRepository,
-	feedRepo repositories.FeedRepository,
+	tweetRepo tweetrepo.TweetRepository,
+	feedRepo feedrepo.FeedRepository,
 	authenticationValidator authn.AuthenticationValidator) {
 	logger := watermill.NewStdLogger(false, false)
 
@@ -61,8 +62,8 @@ type Router struct {
 	OAuth2Router            authn.OAuth2Router
 	Subscriber              message.Subscriber
 	Publisher               Publisher
-	TweetRepo               repositories.TweetRepository
-	FeedRepo                repositories.FeedRepository
+	TweetRepo               tweetrepo.TweetRepository
+	FeedRepo                feedrepo.FeedRepository
 	Logger                  watermill.LoggerAdapter
 }
 
