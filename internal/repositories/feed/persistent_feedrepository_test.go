@@ -14,6 +14,7 @@ import (
 
 func setupFeedRepo() feedrepo.FeedRepository {
 	// Setup the test database
+	// TODO: Move out connection string and database name to be read from settings or env vars
 	configuration := config.Configuration{
 		Mode: config.Persistent,
 		FeedsStorage: config.FeedsStorage{

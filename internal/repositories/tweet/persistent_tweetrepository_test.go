@@ -16,11 +16,12 @@ import (
 
 func setupTweetRepo() tweetrepo.TweetRepository {
 	// Setup the test database
+	// TODO: Move out connection string and database name to be read from settings or env vars
 	configuration := config.Configuration{
 		Mode: config.Persistent,
 		TweetsStorage: config.TweetsStorage{
 			ConnectionString: "myuser:mypassword@tcp(127.0.0.1:3306)",
-			DatabaseName:     "TweetsDb",
+			DatabaseName:     "Tests_TweetsDb",
 		},
 	}
 

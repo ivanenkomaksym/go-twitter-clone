@@ -29,6 +29,8 @@ To run the service using Docker Compose, use the following command:
 docker-compose up
 ```
 
+This command launches the service along with its dependencies defined in the docker-compose.yml file.
+
 # Testing
 
 To run all existing tests recursively execute in the root folder:
@@ -37,7 +39,33 @@ To run all existing tests recursively execute in the root folder:
 go test ./... -v
 ```
 
-This command launches the service along with its dependencies defined in the docker-compose.yml file.
+## Integration tests
+
+### Feed tests
+
+First make sure you have Mongo instance running, e.g. using docker:
+```
+docker run -d -p 27017:27017 --name mongo mongo:latest
+```
+
+Feed integation test will connect to `Tests_FeedsDb` Mongo database. To run tests execute in root folder:
+
+```
+go test .\internal\repositories\feed\persistent_feedrepository_test.go -v
+```
+
+### Tweet tests
+
+First make sure you have MySQL instance running, e.g. using docker:
+```
+docker run -d --name twitter-mysql-test -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword -e MYSQL_DATABASE=Tests_TweetsDb -p 3306:3306 mysql:latest
+```
+
+Tweet integration test will connect to `Tests_TweetsDb` MySql database. To run tests execute in root folder:
+
+```
+go test .\internal\repositories\tweet\persistent_tweetrepository_test.go -v
+```
 
 # References
 [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events)
