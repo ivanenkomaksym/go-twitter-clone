@@ -40,17 +40,11 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v4
       with:
-        go-version: '1.20'
+        go-version: '1.23.2'
+        check-latest: true
 
     - name: Build
       run: go build -v ./...
-
-    - name: Wait for MySQL to be ready
-      run: |
-        until docker exec twitter-mysql-test mysqladmin ping --host=localhost --user=myuser --password=mypassword --silent; do
-          echo "Waiting for MySQL to be ready..."
-          sleep 2
-        done
 
     - name: Run tests
       run: go test ./... -v
