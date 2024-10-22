@@ -11,6 +11,7 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 * Using appsettings in Go applications.
 * Includes Dockerfiles and Docker Compose configuration for containerizing the sample microservices.
 * Supports basic Google OAuth2
+* Runs database integration tests during CI using github workflow actions
 
 ![Alt text](docs/architecture.png?raw=true "Application architecture")
 
@@ -66,6 +67,14 @@ Tweet integration test will connect to `Tests_TweetsDb` MySql database. To run t
 ```
 go test .\internal\repositories\tweet\persistent_tweetrepository_test.go -v
 ```
+
+### Integration tests in CI using github workflow actions
+There's a dedicated workflow installed on repository that would do the following:
+1. Spin up required services: MySQL and Mongo
+2. Check out code
+3. Set up Go environment
+4. Build
+5. Run all tests
 
 # References
 [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events)
