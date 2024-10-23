@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
+	"strconv"
 
 	"golang.org/x/oauth2/google"
 )
@@ -17,8 +18,18 @@ func ReadConfiguration() Configuration {
 	json.Unmarshal(appsettingsContent, &configuration)
 
 	// Set default google endpoints
+	if authenticationEnableEnvVar := os.Getenv("Authentication:Enable"); authenticationEnableEnvVar != "" {
+		log.Println("Overriding Authentication:Enable from environment variable: ", authenticationEnableEnvVar)
+		configuration.Authentication.Enable, _ = strconv.ParseBool(authenticationEnableEnvVar)
+	}
+
 	if configuration.Authentication.Enable {
 		configuration.Authentication.OAuth2.Endpoint = google.Endpoint
+	}
+
+	if modeEnvVar := os.Getenv("Mode"); modeEnvVar != "" {
+		log.Println("Overriding Mode from environment variable: ", modeEnvVar)
+		configuration.Mode, _ = ParseMode(modeEnvVar)
 	}
 
 	if tweetsStorageConnectionStringEnvVar := os.Getenv("TweetsStorage:ConnectionString"); tweetsStorageConnectionStringEnvVar != "" {
