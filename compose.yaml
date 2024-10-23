@@ -18,10 +18,20 @@ services:
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"
       - "ApiServer:ApplicationUrl=0.0.0.0:8016"
+      - "Authentication:Enable=true"
     ports:
       - 8016:8016
+    depends_on:
+      mysql:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      nats:
+        condition: service_started
     links: 
-      - mysql:mysql
+      - mysql
+      - mongo
+      - nats
 
   go-twitter-clone-client:
     build:
@@ -40,6 +50,11 @@ services:
       - "MYSQL_PASSWORD=mypassword"
     ports:
       - 3306:3306
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongo:
     image: mongo
