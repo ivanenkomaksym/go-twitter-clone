@@ -7,9 +7,6 @@ const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
 const clientEmail = serviceAccountKey.client_email;
 const privateKey = serviceAccountKey.private_key;
 
-// The URL to which Google expects the token to be sent for validation
-const tokenUrl = "https://oauth2.googleapis.com/token";
-
 /**
  * Generate a JWT signed with RS256 for Google OAuth2.0 service account authentication.
  * @returns {string} - Signed JWT token.
@@ -19,7 +16,7 @@ function createJWT() {
     const payload = {
         iss: clientEmail,                       // Issuer - service account email
         scope: "https://www.googleapis.com/auth/cloud-platform", // Scope(s) you need
-        aud: tokenUrl,                          // Audience - Google's OAuth2 token URL
+        aud: "https://oauth2.googleapis.com/token",              // Audience - Google's OAuth2 token URL
         exp: now + 3600,                        // Expiration time (1 hour)
         iat: now                                // Issued at time
     };
@@ -29,6 +26,4 @@ function createJWT() {
     return token;
 }
 
-// Generate the token and print it
-const jwtToken = createJWT();
-console.log("Generated JWT:", jwtToken);
+module.exports = { createJWT }; // Ensure this is correct
