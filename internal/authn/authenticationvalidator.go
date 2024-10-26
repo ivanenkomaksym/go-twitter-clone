@@ -18,6 +18,22 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 		return &models.User{IsAnonymous: true}
 	}
 
+	access_token := r.Header.Get("Authorization")
+	if access_token != "" {
+		url := fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s", access_token)
+		_, err := http.Get(url)
+		if err != nil {
+			http.Error(w, "Failed to validate access_token", http.StatusUnauthorized)
+			return nil
+		}
+
+		user := models.User{
+			IsAnonymous: true, // TODO: mark this as service account user
+		}
+
+		return &user
+	}
+
 	cookie, err := r.Cookie("id_token")
 	if err != nil {
 		http.Error(w, "Unauthorized: No id_token found", http.StatusUnauthorized)
