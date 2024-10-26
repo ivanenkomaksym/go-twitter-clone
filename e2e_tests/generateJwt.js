@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
 // Load the service account key from environment variables
 const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
@@ -11,7 +11,7 @@ const privateKey = serviceAccountKey.private_key;
  * Generate a JWT signed with RS256 for Google OAuth2.0 service account authentication.
  * @returns {string} - Signed JWT token.
  */
-function createJWT() {
+export function createJWT() {
     const now = Math.floor(Date.now() / 1000);
     const payload = {
         iss: clientEmail,                       // Issuer - service account email
@@ -25,5 +25,3 @@ function createJWT() {
     const token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
     return token;
 }
-
-module.exports = { createJWT }; // Ensure this is correct
