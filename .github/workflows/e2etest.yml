@@ -33,10 +33,8 @@ jobs:
         npm install # Install Node.js dependencies
 
     - name: Run e2e tests
+      env:
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       run: |
         cd e2e_tests
         npm test # Execute your tests
-
-    - name: Tear down Docker Compose
-      if: always() # Ensure it runs even if previous steps fail
-      run: docker-compose down
