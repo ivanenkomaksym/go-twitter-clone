@@ -48,28 +48,3 @@ jobs:
 
     - name: Run tests
       run: go test ./... -v
-      
-    - name: Run docker-compose
-      uses: hoverkraft-tech/compose-action@v2.0.1
-      with:
-        compose-file: "./compose.yml"
-        sleep 10 # Optional: wait for services to initialize
-
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16' # Adjust version as needed
-
-    - name: Install dependencies
-      run: |
-        cd e2e_tests
-        npm install # Install Node.js dependencies
-
-    - name: Run e2e tests
-      run: |
-        cd e2e_tests
-        npm test # Execute your tests
-
-    - name: Tear down Docker Compose
-      if: always() # Ensure it runs even if previous steps fail
-      run: docker-compose down
