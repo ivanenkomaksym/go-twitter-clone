@@ -4,8 +4,10 @@ import { expect } from 'chai';
 
 describe('E2E Tweet API Tests', () => {
     let accessToken;
+    const baseurl = 'http://localhost:8016/api';
     const golangtag = 'golang';
     const e2etestingtag = 'e2etesting';
+    const tweettitle = 'e2e tests on GO app in CI';
     let createdTweetId = "ca17e472-4d75-4bd5-9f75-4f9e61892591";
 
     before(async () => {
@@ -30,11 +32,21 @@ describe('E2E Tweet API Tests', () => {
         }
     });
 
+    it('should return unauthorized given no authorization', async () => {
+        const url = `${baseurl}/tweets`;
+
+        try {
+            await axios.get(url);
+        } catch (error) {
+            expect(error.response.status).to.equal(401);
+        }
+    });
+
     it('should create a new tweet', async () => {
-        const url = 'http://localhost:8016/api/tweets';
+        const url = `${baseurl}/tweets`;
         const newTweet = {
             id: createdTweetId,
-            title: 'e2e tests on GO app in CI',
+            title: tweettitle,
             content: 'How to run end-to-end tests on full scale GO environment during CI using github workflow actions',
             author: 'testUser',
             tags: [golangtag, e2etestingtag],
@@ -56,7 +68,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should retrieve all tweets', async () => {
-        const url = 'http://localhost:8016/api/tweets';
+        const url = `${baseurl}/tweets`;
 
         try {
             const response = await axios.get(url, {
@@ -75,7 +87,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should retrieve all feeds and verify the tagged feed exists', async () => {
-        const url = 'http://localhost:8016/api/feeds';
+        const url = `${baseurl}/feeds`;
 
         try {
             const response = await axios.get(url, {
@@ -99,7 +111,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should retrieve a specific feed by tag name and include the created tweet', async () => {
-        const url = `http://localhost:8016/api/feeds/${golangtag}`;
+        const url = `${baseurl}/feeds/${golangtag}`;
 
         try {
             const response = await axios.get(url, {
@@ -122,7 +134,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should retrieve a specific tweet by ID', async () => {
-        const url = `http://localhost:8016/api/tweets/${createdTweetId}`;
+        const url = `${baseurl}/tweets/${createdTweetId}`;
 
         try {
             const response = await axios.get(url, {
@@ -133,7 +145,7 @@ describe('E2E Tweet API Tests', () => {
 
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property('id', createdTweetId);
-            expect(response.data).to.have.property('title', 'My First Tweet');
+            expect(response.data).to.have.property('title', tweettitle);
         } catch (error) {
             console.error("Error retrieving tweet by ID: ", error.response ? error.response.data : error.message);
             throw error;
@@ -141,7 +153,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should delete a tweet by ID', async () => {
-        const url = `http://localhost:8016/api/tweets/${createdTweetId}`;
+        const url = `${baseurl}/tweets/${createdTweetId}`;
 
         try {
             const response = await axios.delete(url, {
@@ -158,7 +170,7 @@ describe('E2E Tweet API Tests', () => {
     });
 
     it('should verify tweet deletion', async () => {
-        const url = `http://localhost:8016/api/tweets/${createdTweetId}`;
+        const url = `${baseurl}/tweets/${createdTweetId}`;
 
         try {
             await axios.get(url, {
