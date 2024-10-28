@@ -4,6 +4,8 @@ import { expect } from 'chai';
 
 describe('E2E Tweet API Tests', () => {
     let accessToken;
+    const golangtag = 'golang';
+    const e2etestingtag = 'e2etesting';
     let createdTweetId = "ca17e472-4d75-4bd5-9f75-4f9e61892591";
 
     before(async () => {
@@ -32,10 +34,10 @@ describe('E2E Tweet API Tests', () => {
         const url = 'http://localhost:8016/api/tweets';
         const newTweet = {
             id: createdTweetId,
-            title: 'My First Tweet',
-            content: 'Hello world!',
+            title: 'e2e tests on GO app in CI',
+            content: 'How to run end-to-end tests on full scale GO environment during CI using github workflow actions',
             author: 'testUser',
-            tags: ['test', 'hello'],
+            tags: [golangtag, e2etestingtag],
             created_at: new Date().toISOString()
         };
 
@@ -68,6 +70,53 @@ describe('E2E Tweet API Tests', () => {
             expect(response.data.some(tweet => tweet.id === createdTweetId)).to.be.true;
         } catch (error) {
             console.error("Error retrieving all tweets: ", error.response ? error.response.data : error.message);
+            throw error;
+        }
+    });
+
+    it('should retrieve all feeds and verify the tagged feed exists', async () => {
+        const url = 'http://localhost:8016/api/feeds';
+
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            });
+
+            expect(response.status).to.equal(200);
+            expect(response.data.feeds).to.be.an('array');
+
+            const golangfeedExists = response.data.feeds.some(feed => feed.name === golangtag);
+            expect(golangfeedExists).to.be.true;
+            
+            const e2etestingfeedExists = response.data.feeds.some(feed => feed.name === e2etestingtag);
+            expect(e2etestingfeedExists).to.be.true;
+        } catch (error) {
+            console.error("Error retrieving all feeds: ", error.response ? error.response.data : error.message);
+            throw error;
+        }
+    });
+
+    it('should retrieve a specific feed by tag name and include the created tweet', async () => {
+        const url = `http://localhost:8016/api/feeds/${golangtag}`;
+
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            });
+
+            expect(response.status).to.equal(200);
+            expect(response.data).to.have.property('name', golangtag);
+            expect(response.data).to.have.property('tweets').that.is.an('array');
+
+            // Confirm that the specific tweet exists within the feed's tweets
+            const tweetExistsInFeed = response.data.tweets.some(tweet => tweet.id === createdTweetId);
+            expect(tweetExistsInFeed).to.be.true;
+        } catch (error) {
+            console.error("Error retrieving feed by name: ", error.response ? error.response.data : error.message);
             throw error;
         }
     });

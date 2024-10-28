@@ -70,6 +70,7 @@ func (adapter TweetStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Req
 
 	tweet := adapter.repo.GetTweetById(tweetID)
 	if tweet == nil {
+		w.WriteHeader(404)
 		return nil, false
 	}
 
