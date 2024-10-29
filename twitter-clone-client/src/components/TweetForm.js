@@ -66,11 +66,13 @@ const TweetForm = () => {
     };
 
     const handleTagClick = async (tag) => {
-        setSelectedTag(tag);
-        const success = await apiHandlers.fetchTaggedTweets(tag, setTaggedTweets, setEventSource);
+        let tagName = tag.name;
+
+        setSelectedTag(tagName);
+        const success = await apiHandlers.fetchTaggedTweets(tagName, setTaggedTweets, setEventSource);
 
         if (success) {
-            const eventSource = eventSourceHandlers.setUpFeedsTagEventSource(tag, setTaggedTweets);
+            const eventSource = eventSourceHandlers.setUpFeedsTagEventSource(tagName, setTaggedTweets);
             setEventSource(eventSource);
 
             return () => {

@@ -10,7 +10,10 @@ export const setUpFeedsEventSource = (setDataCallback) => {
     eventSource.addEventListener('data', (event) => {
       try {
         const data = JSON.parse(event.data);
-        const updatedTags = data.feeds.map(feed => feed.name);
+        const updatedTags = data.feeds.map(feed => ({
+          name: feed.name,
+          nofTweets: feed.tweets
+        }));
         setDataCallback(updatedTags);
       } catch (error) {
         console.error('Error parsing event data:', error);

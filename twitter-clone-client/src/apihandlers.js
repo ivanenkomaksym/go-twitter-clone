@@ -12,7 +12,10 @@ export const fetchTagsFromServer = async () => {
 
     if (response.status == 200) {
       const data = await response.data;
-      const fetchedTags = data.feeds.map(feed => feed.name);
+      const fetchedTags = data.feeds.map(feed => ({
+        name: feed.name,
+        nofTweets: feed.tweets
+      }));
       return fetchedTags;
     } else {
       console.error('Failed to fetch tags.');

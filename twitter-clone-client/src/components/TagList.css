@@ -1,0 +1,62 @@
+/* CSS for TagList Sidebar */
+.tag-list-sidebar {
+    position: fixed;
+    right: 20px;
+    top: 100px; /* Adjust as necessary */
+    width: 250px;
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tag-list-sidebar h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  
+  .tag-list-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .tag-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .tag-item:last-child {
+    border-bottom: none;
+  }
+  
+  .tag-list-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tag-item {
+    margin-bottom: 12px;
+    cursor: pointer;
+  }
+  
+  .tag-name {
+    font-weight: bold;
+    color: #1DA1F2; /* Twitter's color for tags */
+    font-size: 16px;
+  }
+  
+  .tag-count {
+    color: #8899A6; /* Lighter color for subtext */
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  
+  
+  .tag-item:hover .tag-name {
+    text-decoration: underline;
+  }
+  
