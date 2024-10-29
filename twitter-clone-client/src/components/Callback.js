@@ -1,17 +1,15 @@
 import React, { useEffect } from 'react';
 import CallbackStyles from "./Callback.module.css"
-import { signIn } from "../authhandlers.js"
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './authContext.tsx';
 
 function Callback() {
 
-    useEffect(() => {
-        const signInAsync = async () => {
-            await signIn();
-            navigate("/"); // Redirect to root
-        };
+    const { checkAuth } = useAuth();
 
-        signInAsync();
+    useEffect(() => {
+        checkAuth();
+        navigate("/"); // Redirect to root
     }, []);
 
     const navigate = useNavigate();

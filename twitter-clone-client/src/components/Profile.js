@@ -1,38 +1,31 @@
-import React, { useEffect, useState } from 'react';
 import ProfileStyles from "./Profile.module.css"
-import {loadUserFromLocalStorage} from "../authhandlers.js"
+import { useAuth } from "./authContext.tsx"
 
 function Profile() {
-  const [userInfo, setUserInfo] = useState(null);
-
-  // Retrieve user information from local storage
-  useEffect(() => {
-    const userInfoFromLocalStorage = loadUserFromLocalStorage()
-    setUserInfo(userInfoFromLocalStorage);
-  }, []);
+  const { user } = useAuth();
 
   return (
     <div className={ProfileStyles.profileContainer}>
-      {userInfo ? (
+      {user ? (
         <div>
           <h2>User Profile</h2>
           <table className={ProfileStyles.profileTable}>
             <tbody>
               <tr>
                 <td>First Name:</td>
-                <td>{userInfo.firstName}</td>
+                <td>{user.firstName}</td>
               </tr>
               <tr>
                 <td>Last Name:</td>
-                <td>{userInfo.lastName}</td>
+                <td>{user.lastName}</td>
               </tr>
               <tr>
                 <td>Email:</td>
-                <td>{userInfo.email}</td>
+                <td>{user.email}</td>
               </tr>
               <tr>
                 <td>Profile Picture:</td>
-                <td><img src={userInfo.picture} alt="User Profile" className={ProfileStyles.profilePicture} /></td>
+                <td><img src={user.picture} alt="User Profile" className={ProfileStyles.profilePicture} /></td>
               </tr>
             </tbody>
           </table>

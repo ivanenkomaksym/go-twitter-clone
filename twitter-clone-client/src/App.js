@@ -6,18 +6,21 @@ import Login from './components/Login';
 import Profile from './components/Profile';
 import Nav from "./components/Nav"
 import Callback from './components/Callback'
+import { AuthProvider } from './components/authContext.tsx'
 import './App.css';
 
 function App() {
   return (
     <div className="app">
-      <Nav />
-      <Routes>        
-        <Route path="/" element={<TweetForm />} />
-        <Route path="/account/login" element={<Login />} />
-        <Route path="/account/profile" element={<Profile />} />
-        <Route path="/callback" element={<Callback />} />
-      </Routes>
+      <AuthProvider>
+        <Nav />
+        <Routes>
+          <Route path="/" element={<TweetForm />} />
+          <Route path="/account/login" element={<Login />} />
+          <Route path="/account/profile" element={<Profile />} />
+          <Route path="/callback" element={<Callback />} />
+        </Routes>
+      </AuthProvider>
     </div>
   );
 }

@@ -1,58 +1,35 @@
-// TweetForm.js
 import React, { useState, useEffect } from 'react';
-import { Link  } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import TagList from './TagList';
 import TweetList from './TweetList';
 import * as apiHandlers from '../apihandlers';
 import * as eventSourceHandlers from '../eventSourceHandlers';
 import './TweetForm.css';
-import IsAuthnEnabled from '../useFeatureFlags.js';
-import { loadUserFromLocalStorage } from '../authhandlers.js';
+import { useAuth } from './authContext.tsx';
 
 const TweetForm = () => {
-    // Load hashtags from local storage on component mount
-    const [userInfo, setUserInfo] = useState(null);
-    const [isAuthenticated, setAuthenticated] = useState(false);
     const [tags, setTags] = useState([]);
     const [tweetTags, setTweetTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
     const [taggedTweets, setTaggedTweets] = useState([]);
     const [eventSource, setEventSource] = useState(null);
 
-    const isAuthEnabled = IsAuthnEnabled();
-    
-    useEffect(() => {
-        if (!isAuthEnabled)
-            setAuthenticated(true);
-        else
-            setAuthenticated(userInfo != null);
-    }, [isAuthEnabled]);
-
-    useEffect(() => {
-        const localUserInfo = loadUserFromLocalStorage();
-
-        console.log("userInfo: ", localUserInfo);
-        if (localUserInfo) {
-            setUserInfo(localUserInfo);
-        } else {
-            setUserInfo(null);
-        }
-    }, []);
+    const { isAuthenticated, user } = useAuth();
 
     const [formData, setFormData] = useState({
         title: '',
         content: '',
-        author: userInfo ? `${userInfo.firstName} ${userInfo.lastName}` : ''
+        author: user ? `${user.firstName} ${user.lastName}` : ''
     }, []);
 
     useEffect(() => {
-        if (userInfo) {
+        if (user) {
             setFormData(prevFormData => ({
                 ...prevFormData,
-                author: `${userInfo.firstName} ${userInfo.lastName}`
+                author: `${user.firstName} ${user.lastName}`
             }));
         }
-    }, [userInfo]);
+    }, [user]);
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -146,7 +123,7 @@ const TweetForm = () => {
 
                             <div className="form-group">
                                 <label>Author:</label>
-                                <input type="text" name="author" value={formData.author} onChange={handleInputChange} readOnly={isAuthEnabled} />
+                                <input type="text" name="author" value={formData.author} onChange={handleInputChange} readOnly={true} />
                             </div>
 
                             <button type="button" onClick={handleAddTweet}>Add tweet</button>
