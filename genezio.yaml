@@ -1,0 +1,10 @@
+frontend:
+    path: ./
+    publish: ""
+    scripts:
+        build: ""
+        deploy: ""
+    subdomain: go-twitter-clone
+name: go-twitter-clone
+region: eu-central-1
+yamlVersion: 2
