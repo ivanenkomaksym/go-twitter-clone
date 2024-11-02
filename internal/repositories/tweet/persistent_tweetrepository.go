@@ -8,6 +8,7 @@ import (
 	"twitter-clone/internal/models"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 )
 
 type PersistentTweetRepository struct {
@@ -73,16 +74,32 @@ func (repo *PersistentTweetRepository) init(configuration config.Configuration) 
 	repo.db = db
 
 	// SQL to create the 'tweets' table if it does not exist
-	createTableSQL := `
+	createUsersTableSQL := `
+	CREATE TABLE IF NOT EXISTS users (
+		id VARCHAR(36) PRIMARY KEY,
+		first_name VARCHAR(255),
+		last_name VARCHAR(255),
+		email VARCHAR(255) UNIQUE,
+		picture TEXT
+	)`
+
+	_, err = repo.db.Exec(createUsersTableSQL)
+	if err != nil {
+		log.Printf("Error creating 'users' table: %v", err)
+		return err
+	}
+
+	createTweetsTableSQL := `
 	CREATE TABLE IF NOT EXISTS tweets (
 		id VARCHAR(36) PRIMARY KEY,
 		title VARCHAR(255),
 		content TEXT,
-		author VARCHAR(255),
-		created_at TIMESTAMP
-	)
-	`
-	_, err = repo.db.Exec(createTableSQL)
+		created_at TIMESTAMP,
+		user_id VARCHAR(36),
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+	)`
+
+	_, err = repo.db.Exec(createTweetsTableSQL)
 	if err != nil {
 		log.Printf("Error creating 'tweets' table: %v", err)
 		return err
@@ -99,10 +116,34 @@ func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.Cre
 		return nil
 	}
 
-	// Perform the actual insertion into the database
-	// TODO: insert user into database
-	_, err := repo.db.Exec("INSERT INTO tweets (id, title, content, author, created_at) VALUES (?, ?, ?, ?, ?)",
-		tweet.ID, tweet.Title, tweet.Content, tweet.User, tweet.CreatedAt.Time)
+	// Insert or update the user
+
+	// Check if user already exists by email
+	var userID string
+	err := repo.db.QueryRow("SELECT id FROM users WHERE email = ?", tweet.User.Email).Scan(&userID)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("Error checking user existence in database: %v", err)
+		return nil
+	}
+
+	// If the user does not exist, insert a new user
+	if err == sql.ErrNoRows {
+		userID = uuid.NewString()
+		_, err := repo.db.Exec(`
+        INSERT INTO users (id, first_name, last_name, email, picture) 
+        VALUES (?, ?, ?, ?, ?)
+    `, userID, tweet.User.FirstName, tweet.User.LastName, tweet.User.Email, tweet.User.Picture)
+		if err != nil {
+			log.Printf("Error inserting new user into database: %v", err)
+			return nil
+		}
+	}
+
+	// Insert the tweet with a reference to the user_id
+	_, err = repo.db.Exec(`
+		INSERT INTO tweets (id, title, content, created_at, user_id) 
+		VALUES (?, ?, ?, ?, ?)
+	`, tweet.ID, tweet.Title, tweet.Content, tweet.CreatedAt.Time, userID)
 	if err != nil {
 		log.Printf("Error inserting tweet into database: %v", err)
 		return nil
@@ -113,7 +154,13 @@ func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.Cre
 }
 
 func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
-	rows, err := repo.db.Query("SELECT id, title, content, author, created_at FROM tweets")
+	// Query to fetch tweets along with user details
+	rows, err := repo.db.Query(`
+		SELECT t.id, t.title, t.content, t.created_at, 
+		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture
+		FROM tweets t
+		JOIN users u ON t.user_id = u.id
+	`)
 	if err != nil {
 		log.Printf("Error retrieving tweets from database: %v", err)
 		return nil
@@ -123,14 +170,28 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 	var tweets []models.Tweet
 	for rows.Next() {
 		var tweet models.Tweet
-		// TODO: read user from database
-		var author string
-		err := rows.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &author, &tweet.CreatedAt)
+		var user models.User
+		var userID string
+
+		// Scan the values from the row into the tweet and user structs
+		err := rows.Scan(
+			&tweet.ID,
+			&tweet.Title,
+			&tweet.Content,
+			&tweet.CreatedAt,
+			&userID,
+			&user.FirstName,
+			&user.LastName,
+			&user.Email,
+			&user.Picture,
+		)
 		if err != nil {
-			log.Printf("Error scanning tweet rows: %v", err)
+			log.Printf("Error scanning tweet row: %v", err)
 			return nil
 		}
 
+		// Set the user struct in the tweet and add to the tweets slice
+		tweet.User = user
 		tweets = append(tweets, tweet)
 	}
 
@@ -143,19 +204,41 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 }
 
 func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
-	row := repo.db.QueryRow("SELECT id, title, content, author, created_at FROM tweets WHERE id = ?", id)
+	// Query to fetch a single tweet along with user details by tweet ID
+	row := repo.db.QueryRow(`
+		SELECT t.id, t.title, t.content, t.created_at, 
+		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture
+		FROM tweets t
+		JOIN users u ON t.user_id = u.id
+		WHERE t.id = ?
+	`, id)
 
 	var tweet models.Tweet
-	// TODO: read user from database
-	var author string
-	err := row.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &author, &tweet.CreatedAt)
-	if err == sql.ErrNoRows {
-		// No tweet found with the given ID
-		return nil
-	} else if err != nil {
-		log.Printf("Error retrieving tweet from database: %v", err)
+	var user models.User
+	var userID string
+
+	// Scan the result into the tweet and user structs
+	err := row.Scan(
+		&tweet.ID,
+		&tweet.Title,
+		&tweet.Content,
+		&tweet.CreatedAt,
+		&userID,
+		&user.FirstName,
+		&user.LastName,
+		&user.Email,
+		&user.Picture,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+		}
+		log.Printf("Error retrieving tweet by ID from database: %v", err)
 		return nil
 	}
+
+	// Set the user struct in the tweet
+	tweet.User = user
 
 	return &tweet
 }

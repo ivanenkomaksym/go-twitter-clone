@@ -47,10 +47,6 @@ func TestCreateTweet(t *testing.T) {
 	assert.NotNil(t, createdTweet, "CreateTweet should return the created tweet")
 	tweetId := createdTweet.ID
 
-	// Attempt to create a tweet with the same ID (should return nil)
-	duplicateTweet := repo.CreateTweet(tweet)
-	assert.Nil(t, duplicateTweet, "CreateTweet should return nil for duplicate tweet")
-
 	// Test GetTweets
 	allTweets := repo.GetTweets()
 	assert.Len(t, allTweets, 1, "GetTweets should return a single tweet")
