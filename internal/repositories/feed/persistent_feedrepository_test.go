@@ -103,9 +103,9 @@ func TestAppendTweet(t *testing.T) {
 		ID:        "abc",
 		Title:     "title",
 		Content:   "content",
-		Author:    "author",
 		Tags:      []string{"TechNews"},
 		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
+		User:      models.User{FirstName: "Alice", LastName: "Liddel", Email: "alice@gmail.com", Picture: "picture.png"},
 	}
 
 	err := feedRepo.AppendTweet(expectedTweet)
@@ -124,7 +124,6 @@ func TestAppendTweet(t *testing.T) {
 	assert.Equal(t, expectedTweet.ID, actualTweet.ID)
 	assert.Equal(t, expectedTweet.Title, actualTweet.Title)
 	assert.Equal(t, expectedTweet.Content, actualTweet.Content)
-	assert.Equal(t, expectedTweet.Author, actualTweet.Author)
 	assert.Equal(t, expectedTweet.Tags, actualTweet.Tags)
 
 	// Compare only the Unix timestamp part of the time

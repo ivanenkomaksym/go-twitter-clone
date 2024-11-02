@@ -3,7 +3,6 @@ package repositories_test
 import (
 	"fmt"
 	"testing"
-	"time"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
 	repositories "twitter-clone/internal/repositories"
@@ -37,19 +36,16 @@ func setupTweetRepo() tweetrepo.TweetRepository {
 func TestCreateTweet(t *testing.T) {
 	repo := setupTweetRepo()
 	// Create a tweet
-	tweet := models.Tweet{
-		ID:        "abc",
-		Title:     "title",
-		Content:   "content",
-		Author:    "author",
-		Tags:      []string{"tag1"},
-		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
+	tweet := models.CreateTweetRequest{
+		Title:   "title",
+		Content: "content",
+		Tags:    []string{"tag1"},
 	}
 
 	// Test the CreateTweet method
 	createdTweet := repo.CreateTweet(tweet)
 	assert.NotNil(t, createdTweet, "CreateTweet should return the created tweet")
-	assert.Equal(t, tweet.ID, createdTweet.ID, "Created tweet should have the same ID")
+	tweetId := createdTweet.ID
 
 	// Attempt to create a tweet with the same ID (should return nil)
 	duplicateTweet := repo.CreateTweet(tweet)
@@ -60,20 +56,20 @@ func TestCreateTweet(t *testing.T) {
 	assert.Len(t, allTweets, 1, "GetTweets should return a single tweet")
 
 	// Test GetTweetById
-	foundTweet := repo.GetTweetById(tweet.ID)
+	foundTweet := repo.GetTweetById(tweetId)
 	assert.NotNil(t, foundTweet, "GetTweetById should find the tweet")
-	assert.Equal(t, tweet.ID, foundTweet.ID, "Found tweet should have the same ID")
+	assert.Equal(t, tweetId, foundTweet.ID, "Found tweet should have the same ID")
 
 	// Attempt to get a non-existing tweet by ID (should return nil)
 	nonExistingTweet := repo.GetTweetById("non-existing-id")
 	assert.Nil(t, nonExistingTweet, "GetTweetById should return nil for non-existing tweet")
 
 	// Test DeleteTweet
-	deleted := repo.DeleteTweet(tweet.ID)
+	deleted := repo.DeleteTweet(tweetId)
 	assert.True(t, deleted, "DeleteTweet should return true for successful deletion")
 
 	// Attempt to delete the same tweet again (should return false)
-	nonExistingDelete := repo.DeleteTweet(tweet.ID)
+	nonExistingDelete := repo.DeleteTweet(tweetId)
 	assert.False(t, nonExistingDelete, "DeleteTweet should return false for non-existing tweet deletion")
 
 	// Ensure no tweets are left after deletion

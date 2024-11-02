@@ -9,7 +9,8 @@ type InMemoryTweetRepository struct {
 	tweets []models.Tweet
 }
 
-func (repo *InMemoryTweetRepository) CreateTweet(tweet models.Tweet) *models.Tweet {
+func (repo *InMemoryTweetRepository) CreateTweet(createTweetRequest models.CreateTweetRequest) *models.Tweet {
+	tweet := CreateNewTweet(createTweetRequest)
 	idx := slices.IndexFunc(repo.tweets, func(t models.Tweet) bool { return t.ID == tweet.ID })
 	if idx != -1 {
 		return nil

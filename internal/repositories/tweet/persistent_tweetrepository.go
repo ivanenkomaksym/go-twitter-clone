@@ -91,7 +91,8 @@ func (repo *PersistentTweetRepository) init(configuration config.Configuration) 
 	return nil
 }
 
-func (repo *PersistentTweetRepository) CreateTweet(tweet models.Tweet) *models.Tweet {
+func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.CreateTweetRequest) *models.Tweet {
+	tweet := CreateNewTweet(createTweetRequest)
 	// Check if the tweet with the given ID already exists
 	if existingTweet := repo.GetTweetById(tweet.ID); existingTweet != nil {
 		log.Printf("Tweet with ID '%s' already exists", tweet.ID)
@@ -99,8 +100,9 @@ func (repo *PersistentTweetRepository) CreateTweet(tweet models.Tweet) *models.T
 	}
 
 	// Perform the actual insertion into the database
+	// TODO: insert user into database
 	_, err := repo.db.Exec("INSERT INTO tweets (id, title, content, author, created_at) VALUES (?, ?, ?, ?, ?)",
-		tweet.ID, tweet.Title, tweet.Content, tweet.Author, tweet.CreatedAt.Time)
+		tweet.ID, tweet.Title, tweet.Content, tweet.User, tweet.CreatedAt.Time)
 	if err != nil {
 		log.Printf("Error inserting tweet into database: %v", err)
 		return nil
@@ -121,7 +123,9 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 	var tweets []models.Tweet
 	for rows.Next() {
 		var tweet models.Tweet
-		err := rows.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &tweet.Author, &tweet.CreatedAt)
+		// TODO: read user from database
+		var author string
+		err := rows.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &author, &tweet.CreatedAt)
 		if err != nil {
 			log.Printf("Error scanning tweet rows: %v", err)
 			return nil
@@ -142,7 +146,9 @@ func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
 	row := repo.db.QueryRow("SELECT id, title, content, author, created_at FROM tweets WHERE id = ?", id)
 
 	var tweet models.Tweet
-	err := row.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &tweet.Author, &tweet.CreatedAt)
+	// TODO: read user from database
+	var author string
+	err := row.Scan(&tweet.ID, &tweet.Title, &tweet.Content, &author, &tweet.CreatedAt)
 	if err == sql.ErrNoRows {
 		// No tweet found with the given ID
 		return nil

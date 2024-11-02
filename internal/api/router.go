@@ -151,20 +151,20 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var newTweet models.Tweet
-	err := render.Decode(r, &newTweet)
+	var createTweetRequest models.CreateTweetRequest
+	err := render.Decode(r, &createTweetRequest)
 	if err != nil {
 		logAndWriteError(router.Logger, w, err)
 		return
 	}
 
-	created := router.TweetRepo.CreateTweet(newTweet)
-	if created == nil {
+	createdTweet := router.TweetRepo.CreateTweet(createTweetRequest)
+	if createdTweet == nil {
 		return
 	}
 
 	event := messaging.TweetCreated{
-		Tweet:      newTweet,
+		Tweet:      *createdTweet,
 		OccurredAt: time.Now().UTC(),
 	}
 
