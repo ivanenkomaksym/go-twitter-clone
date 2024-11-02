@@ -158,7 +158,7 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdTweet := router.TweetRepo.CreateTweet(createTweetRequest)
+	createdTweet := router.TweetRepo.CreateTweet(createTweetRequest, *user)
 	if createdTweet == nil {
 		return
 	}

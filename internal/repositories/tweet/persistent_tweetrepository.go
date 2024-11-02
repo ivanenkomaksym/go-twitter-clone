@@ -108,8 +108,8 @@ func (repo *PersistentTweetRepository) init(configuration config.Configuration) 
 	return nil
 }
 
-func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.CreateTweetRequest) *models.Tweet {
-	tweet := CreateNewTweet(createTweetRequest)
+func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.CreateTweetRequest, user models.User) *models.Tweet {
+	tweet := CreateNewTweet(createTweetRequest, user)
 	// Check if the tweet with the given ID already exists
 	if existingTweet := repo.GetTweetById(tweet.ID); existingTweet != nil {
 		log.Printf("Tweet with ID '%s' already exists", tweet.ID)

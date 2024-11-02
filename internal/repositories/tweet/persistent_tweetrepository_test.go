@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 	"twitter-clone/internal/config"
-	"twitter-clone/internal/models"
 	repositories "twitter-clone/internal/repositories"
 	tweetrepo "twitter-clone/internal/repositories/tweet"
 
@@ -35,15 +34,12 @@ func setupTweetRepo() tweetrepo.TweetRepository {
 
 func TestCreateTweet(t *testing.T) {
 	repo := setupTweetRepo()
-	// Create a tweet
-	tweet := models.CreateTweetRequest{
-		Title:   "title",
-		Content: "content",
-		Tags:    []string{"tag1"},
-	}
+
+	tweet := tweetrepo.TestCreateTweetRequest
+	user := tweetrepo.TestUser
 
 	// Test the CreateTweet method
-	createdTweet := repo.CreateTweet(tweet)
+	createdTweet := repo.CreateTweet(tweet, user)
 	assert.NotNil(t, createdTweet, "CreateTweet should return the created tweet")
 	tweetId := createdTweet.ID
 

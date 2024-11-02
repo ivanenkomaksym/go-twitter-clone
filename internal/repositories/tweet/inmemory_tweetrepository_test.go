@@ -2,7 +2,6 @@ package repositories_test
 
 import (
 	"testing"
-	"twitter-clone/internal/models"
 	repositories "twitter-clone/internal/repositories/tweet"
 
 	"github.com/stretchr/testify/assert"
@@ -12,20 +11,16 @@ func TestInMemoryTweetRepository(t *testing.T) {
 	// Initialize the repository
 	repo := repositories.InMemoryTweetRepository{}
 
-	// Create a tweet
-	tweet := models.CreateTweetRequest{
-		Title:   "title",
-		Content: "content",
-		Tags:    []string{"tag1"},
-	}
+	tweet := repositories.TestCreateTweetRequest
+	user := repositories.TestUser
 
 	// Test CreateTweet
-	createdTweet := repo.CreateTweet(tweet)
+	createdTweet := repo.CreateTweet(tweet, user)
 	assert.NotNil(t, createdTweet, "CreateTweet should return the created tweet")
 	tweetID := createdTweet.ID
 
 	// Attempt to create a tweet with the same ID (should return nil)
-	duplicateTweet := repo.CreateTweet(tweet)
+	duplicateTweet := repo.CreateTweet(tweet, user)
 	assert.Nil(t, duplicateTweet, "CreateTweet should return nil for duplicate tweet")
 
 	// Test GetTweets
