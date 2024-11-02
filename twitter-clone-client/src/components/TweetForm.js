@@ -38,7 +38,7 @@ const TweetForm = () => {
         };
 
         fetchTags();
-    }, []);
+    }, [selectedTag]);
 
     useEffect(() => {
         const eventSource = eventSourceHandlers.setUpFeedsEventSource(setTags);
@@ -109,29 +109,30 @@ const TweetForm = () => {
             {isAuthenticated ? (
                 <>
                     <div className="tweet-form-container">
-                        <TagList tags={tags} handleTagClick={handleTagClick} />
+                    <TagList tags={tags} handleTagClick={handleTagClick} />
 
-                        <h2>Add new tweet</h2>
                         <form className="tweet-form">
-                            <div className="form-group">
-                                <label>Title:</label>
-                                <input type="text" name="title" value={formData.title} onChange={handleInputChange} />
+                            <div className="tweet-input-row">
+                                {/* Avatar */}
+                                    <img src={user.picture} alt="User Avatar" className="avatar" />
+                                    <textarea
+                                        className="tweet-input"
+                                        placeholder="What is happening?!"
+                                        name="content"
+                                        value={formData.content}
+                                        onChange={handleInputChange}
+                                    ></textarea>
                             </div>
 
-                            <div className="form-group">
-                                <label>Content:</label>
-                                <textarea name="content" value={formData.content} onChange={handleInputChange}></textarea>
+                            <div className="tweet-actions">
+                                {/* Post Button */}
+                                <button type="button" className="tweet-post-button" onClick={handleAddTweet}>
+                                    Post
+                                </button>
                             </div>
-
-                            <div className="form-group">
-                                <label>Author:</label>
-                                <input type="text" name="author" value={formData.author} onChange={handleInputChange} readOnly={true} />
-                            </div>
-
-                            <button type="button" onClick={handleAddTweet}>Add tweet</button>
                         </form>
 
-                        {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} />}
+                        {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} handleTagClick={handleTagClick} />}
                     </div>
                 </>
             ) : (

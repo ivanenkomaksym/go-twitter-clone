@@ -2,11 +2,11 @@
 import React from 'react';
 import TweetCard from './TweetCard';
 
-const TweetList = ({ taggedTweets, selectedTag }) => {
+const TweetList = ({ taggedTweets, selectedTag, handleTagClick }) => {
   return (
     <div className="tweet-list">
       {taggedTweets.map(tweet => (
-        <TweetCard key={tweet.id} tweet={tweet} />
+        <TweetCard key={tweet.id} tweet={tweet} handleTagClick={handleTagClick} />
       ))}
     </div>
   );
