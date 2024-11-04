@@ -1,7 +1,7 @@
 // App.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'
-import TweetForm from './components/TweetForm';
+import Main from './components/Main';
 import Login from './components/Login';
 import Profile from './components/Profile';
 import Nav from "./components/Nav"
@@ -15,7 +15,7 @@ function App() {
       <AuthProvider>
         <Nav />
         <Routes>
-          <Route path="/" element={<TweetForm />} />
+          <Route path="/" element={<Main />} />
           <Route path="/account/login" element={<Login />} />
           <Route path="/account/profile" element={<Profile />} />
           <Route path="/callback" element={<Callback />} />

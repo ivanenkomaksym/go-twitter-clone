@@ -1,62 +1,50 @@
-/* CSS for TagList Sidebar */
+/* Sidebar container styling */
 .tag-list-sidebar {
-    position: fixed;
-    right: 20px;
-    top: 100px; /* Adjust as necessary */
-    width: 250px;
-    background-color: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .tag-list-sidebar h3 {
-    margin-bottom: 10px;
-    font-size: 18px;
-  }
-  
-  .tag-list-sidebar ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .tag-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    cursor: pointer;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .tag-item:last-child {
-    border-bottom: none;
-  }
-  
-  .tag-list-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .tag-item {
-    margin-bottom: 12px;
-    cursor: pointer;
-  }
-  
-  .tag-name {
-    font-weight: bold;
-    color: #1DA1F2; /* Twitter's color for tags */
-    font-size: 16px;
-  }
-  
-  .tag-count {
-    color: #8899A6; /* Lighter color for subtext */
-    font-size: 12px;
-    margin-top: 2px;
-  }
-  
-  
-  .tag-item:hover .tag-name {
-    text-decoration: underline;
-  }
-  
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Title styling */
+.tag-list-sidebar h3 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Unordered list styling */
+.tag-list-sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Each tag item */
+.tag-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.tag-item:hover {
+  background-color: #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Tag name styling */
+.tag-name {
+  font-weight: 500;
+  color: #0073e6;
+  text-decoration: underline;
+}
+
+/* Tag count styling */
+.tag-count {
+  font-size: 0.9rem;
+  color: #666;
+}

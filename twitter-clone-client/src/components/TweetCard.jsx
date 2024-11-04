@@ -1,6 +1,7 @@
 import React from 'react';
 import './TweetCard.css';
 import { formatDistanceToNow, parseISO } from 'date-fns';
+import { useMemo } from 'react';
 
 const hashtagRegex = /(^|\B)#(?![0-9_]+\b)([a-zA-Z0-9_]{1,30})(\b|\r)/g; // Match hashtags
 const renderedText = (text) => text.replace(hashtagRegex, (match, prefix, hash, tag) => {
@@ -13,12 +14,12 @@ const createMarkup = (text) => {
 
 const TweetCard = ({ tweet, handleTagClick }) => {
     const createdAt = formatDistanceToNow(parseISO(tweet.created_at), { addSuffix: true });
-    // const renderedText = replaceHashtagsWithLinks(tweet.content);
-
+    
+    const profilePictureUrl = useMemo(() => tweet.user.picture, [tweet.user.picture]);
     return (
         <div className="tweet-card">
             <div className="tweet-icon">
-                <img src={tweet.user.picture} alt={`${tweet.user.email}'s icon`} />
+                <img src={profilePictureUrl} loading="lazy" referrerpolicy="no-referrer" alt={`${tweet.user.email}'s icon`} />
             </div>
             <div className="tweet-content">
                 <div className="tweet-header">

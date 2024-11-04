@@ -1,0 +1,53 @@
+.container {
+  display: flex;
+  justify-content: center;  /* Center-align the main content */
+  align-items: flex-start;  /* Align items at the top */
+  gap: 20px;                /* Space between main panel and sidebar */
+  padding: 20px;
+}
+
+.welcomeMessage {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+}
+
+.welcomeMessage a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.welcomeMessage a:hover {
+  text-decoration: underline;
+}
+
+.main-panel {
+  flex: 2;                  /* Takes up most of the space */
+  max-width: 600px;         /* Limit max width */
+  margin-right: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar styling */
+.sidebar {
+  flex: 1;                  /* Sidebar takes up less space */
+  max-width: 250px;         /* Control the sidebar width */
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}

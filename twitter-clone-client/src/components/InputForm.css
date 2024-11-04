@@ -1,0 +1,55 @@
+.input-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.tweet-input-row {
+    display: flex;
+    align-items: flex-start;
+}
+
+.tweet-input {
+  width: 100%;
+  border: none;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  padding: 10px;
+}
+
+.tweet-input::placeholder {
+  color: #657786;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  
+  .tweet-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  
+  .tweet-post-button {
+    background-color: #1da1f2;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .tweet-post-button:hover {
+    background-color: #1a91da;
+  }

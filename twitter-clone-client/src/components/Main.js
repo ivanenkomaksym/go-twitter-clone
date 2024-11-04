@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import TagList from './TagList';
-import TweetList from './TweetList';
-import * as apiHandlers from '../apihandlers';
-import * as eventSourceHandlers from '../eventSourceHandlers';
-import './TweetForm.css';
+import TagList from './TagList.js';
+import TweetList from './TweetList.js';
+import * as apiHandlers from '../apihandlers.js';
+import * as eventSourceHandlers from '../eventSourceHandlers.js';
+import './Main.css';
+import InputForm from './InputForm.js';
 import { useAuth } from './authContext.tsx';
 
-const TweetForm = () => {
+function Main() {
     const [tags, setTags] = useState([]);
     const [tweetTags, setTweetTags] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
@@ -108,31 +109,20 @@ const TweetForm = () => {
         <div className="container">
             {isAuthenticated ? (
                 <>
-                    <div className="tweet-form-container">
-                    <TagList tags={tags} handleTagClick={handleTagClick} />
+                    <div className="main-panel">
 
-                        <form className="tweet-form">
-                            <div className="tweet-input-row">
-                                {/* Avatar */}
-                                    <img src={user.picture} alt="User Avatar" className="avatar" />
-                                    <textarea
-                                        className="tweet-input"
-                                        placeholder="What is happening?!"
-                                        name="content"
-                                        value={formData.content}
-                                        onChange={handleInputChange}
-                                    ></textarea>
-                            </div>
-
-                            <div className="tweet-actions">
-                                {/* Post Button */}
-                                <button type="button" className="tweet-post-button" onClick={handleAddTweet}>
-                                    Post
-                                </button>
-                            </div>
-                        </form>
+                        <InputForm
+                            user={user}
+                            formData={formData}
+                            handleInputChange={handleInputChange}
+                            handleAddTweet={handleAddTweet}
+                        />
 
                         {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} handleTagClick={handleTagClick} />}
+                    </div>
+
+                    <div>
+                        <TagList tags={tags} handleTagClick={handleTagClick} />
                     </div>
                 </>
             ) : (
@@ -144,4 +134,4 @@ const TweetForm = () => {
     );
 }
 
-export default TweetForm;
+export default Main;
