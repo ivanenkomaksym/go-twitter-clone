@@ -1,5 +1,5 @@
 import React from 'react';
-import './TweetCard.css';
+import '../../styles/tweet/TweetCard.css';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useMemo } from 'react';
 

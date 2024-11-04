@@ -1,5 +1,5 @@
 import React from 'react';
-import './TagList.css';
+import '../../styles/tweet/TagList.css';
 
 const TagList = ({ tags, handleTagClick }) => {
   return (

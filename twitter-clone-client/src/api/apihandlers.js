@@ -1,6 +1,6 @@
 import axios from "axios"
 import { v4 as uuidv4 } from 'uuid';
-import config from './common';
+import config from '../common';
 
 // Function to fetch tags from the server
 export const fetchTagsFromServer = async () => {

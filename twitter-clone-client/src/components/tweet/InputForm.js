@@ -1,5 +1,5 @@
 import React from 'react';
-import './InputForm.css';
+import '../../styles/tweet/InputForm.css';
 
 const InputForm = ({ user, formData, handleInputChange, handleAddTweet }) => {
     return (

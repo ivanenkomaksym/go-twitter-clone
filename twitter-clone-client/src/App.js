@@ -1,12 +1,12 @@
 // App.js
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'
-import Main from './components/Main';
-import Login from './components/Login';
-import Profile from './components/Profile';
-import Nav from "./components/Nav"
-import Callback from './components/Callback'
-import { AuthProvider } from './components/authContext.tsx'
+import Main from './components/pages/Main.js';
+import Login from './components/pages/Login.js';
+import Profile from './components/pages/Profile.js';
+import Nav from "./components/pages/Nav.js"
+import Callback from './components/pages/Callback.js'
+import { AuthProvider } from './components/auth/AuthContext.tsx'
 import './App.css';
 
 function App() {

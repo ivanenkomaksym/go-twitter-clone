@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
-import CallbackStyles from "./Callback.module.css"
+import CallbackStyles from "../../styles/pages/Callback.module.css"
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from './authContext.tsx';
+import { useAuth } from '../auth/AuthContext.tsx';
 
 function Callback() {
 

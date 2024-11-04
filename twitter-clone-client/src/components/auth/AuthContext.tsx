@@ -1,7 +1,7 @@
 // authContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import axios from 'axios';
-import { userInfoUrl } from "../config"
+import { userInfoUrl } from "../../config"
 
 interface AuthContextType {
     isAuthenticated: boolean;

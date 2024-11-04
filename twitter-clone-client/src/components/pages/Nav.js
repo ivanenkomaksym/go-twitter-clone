@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom"
-import NavStyles from "./Nav.module.css"
-import { logOutAuthorizeUrl } from "../config.js"
-import { useAuth } from './authContext.tsx';
+import NavStyles from "../../styles/pages/Nav.module.css"
+import { logOutAuthorizeUrl } from "../../config.js"
+import { useAuth } from '../auth/AuthContext.tsx';
 
 function Nav() {
     const { isAuthenticated } = useAuth();

@@ -1,5 +1,5 @@
-import ProfileStyles from "./Profile.module.css"
-import { useAuth } from "./authContext.tsx"
+import ProfileStyles from "../../styles/pages/Profile.module.css"
+import { useAuth } from '../auth/AuthContext.tsx';
 
 function Profile() {
   const { user } = useAuth();

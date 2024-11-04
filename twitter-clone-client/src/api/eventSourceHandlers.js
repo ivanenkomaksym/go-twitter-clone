@@ -1,4 +1,4 @@
-import config from './common';
+import config from '../common';
 
 // Function to set up EventSource for data changes
 export const setUpFeedsEventSource = (setDataCallback) => {

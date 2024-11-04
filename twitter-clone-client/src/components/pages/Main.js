@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import TagList from './TagList.js';
-import TweetList from './TweetList.js';
-import * as apiHandlers from '../apihandlers.js';
-import * as eventSourceHandlers from '../eventSourceHandlers.js';
-import './Main.css';
-import InputForm from './InputForm.js';
-import { useAuth } from './authContext.tsx';
+import TagList from '../tweet/TagList.js';
+import TweetList from '../tweet/TweetList.js';
+import * as apiHandlers from '../../api/apihandlers.js';
+import * as eventSourceHandlers from '../../api/eventSourceHandlers.js';
+import '../../styles/pages/Main.css';
+import InputForm from '../tweet/InputForm.js';
+import { useAuth } from '../auth/AuthContext.tsx';
 
 function Main() {
     const [tags, setTags] = useState([]);
