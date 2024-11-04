@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom"
 import NavStyles from "../../styles/pages/Nav.module.css"
-import { logOutAuthorizeUrl } from "../../config.js"
+import { logOutAuthorizeUrl } from "../../common.js"
 import { useAuth } from '../auth/AuthContext.tsx';
 
 function Nav() {

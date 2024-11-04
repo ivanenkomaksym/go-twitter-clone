@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import LoginStyles from "../../styles/pages/Login.module.css"
-import {loginAuthorizeUrl} from "../../config.js"
+import {loginAuthorizeUrl} from "../../common.js"
 
 function Login() {    
     const [clicked, setClicked] = useState(false);

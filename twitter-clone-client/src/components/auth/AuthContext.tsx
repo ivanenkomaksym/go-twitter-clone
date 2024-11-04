@@ -1,7 +1,6 @@
 // authContext.tsx
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import axios from 'axios';
-import { userInfoUrl } from "../../config"
+import * as apiHandlers from '../../api/apihandlers';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -20,17 +19,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<any | null>(null);
 
     const checkAuth = async () => {
-        try {
-            const instance = axios.create({
-                withCredentials: true,
-            });
-            const response = await instance.get(userInfoUrl);
-            setUser(response.data);
-            setIsAuthenticated(true);
-        } catch (error) {
-            setUser(null);
-            setIsAuthenticated(false);
-        }
+        const user = apiHandlers.fetchUserInfo();
+        setUser(user);
+        setIsAuthenticated(user != null);
     };
 
     useEffect(() => {
