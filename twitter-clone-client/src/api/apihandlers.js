@@ -10,7 +10,7 @@ export const fetchUserInfo = async () => {
     });
     const response = await instance.get(config.applicationUri + userInfoUrl);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       return await response.data;
     } else {
       console.error('Failed to fetch user info.');
@@ -30,7 +30,7 @@ export const fetchTagsFromServer = async () => {
     });
     const response = await instance.get(config.applicationUri + feedsUrl);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       const data = await response.data;
       const fetchedTags = data.feeds.map(feed => ({
         name: feed.name,
@@ -66,7 +66,7 @@ export const addTweetToServer = async (formData, tweetTags) => {
       }
     });
 
-    if (response.status == 201) {
+    if (response.status === 201) {
       console.log('Tweet added successfully!');
       return true;
     } else {
@@ -86,7 +86,7 @@ export const fetchTaggedTweets = async (tag, setTaggedTweets) => {
     });
     const response = await instance.get(config.applicationUri + `${feedsUrl}/${tag}`);
 
-    if (response.status == 200) {
+    if (response.status === 200) {
       const feedData = await response.data;
       setTaggedTweets(feedData.tweets);
       return true;

@@ -95,7 +95,7 @@ function Main() {
                 eventSource.close();
             }
         };
-    }, [selectedTag]);
+    }, [eventSource, selectedTag]);
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;

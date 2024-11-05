@@ -4,15 +4,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext.tsx';
 
 function Callback() {
-
     const { checkAuth } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         checkAuth();
         navigate("/"); // Redirect to root
-    }, []);
-
-    const navigate = useNavigate();
+    }, [checkAuth, navigate]);
 
     return (
         <div className={CallbackStyles.container}>
