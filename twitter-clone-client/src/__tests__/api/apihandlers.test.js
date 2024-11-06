@@ -2,7 +2,7 @@ jest.mock('../../common', () => require('../../__mocks__/configMock'));
 
 import axios from 'axios';
 import { fetchUserInfo, fetchTagsFromServer, addTweetToServer, fetchTaggedTweets } from '../../api/apihandlers.js'
-import config, { feedsUrl, tweetsUrl, userInfoUrl } from '../../common';
+import { tweetsUrl, userInfoUrl } from '../../common';
 
 // Mock axios
 jest.mock('axios');
@@ -21,7 +21,7 @@ describe('apiHandlers', () => {
 
       const result = await fetchUserInfo();
       expect(result).toEqual(mockData);
-      expect(axios.create().get).toHaveBeenCalledWith(`${config.applicationUri}${userInfoUrl}`);
+      expect(axios.create().get).toHaveBeenCalledWith(userInfoUrl);
     });
 
     it('should return null when the response status is not 200', async () => {
@@ -86,8 +86,7 @@ describe('apiHandlers', () => {
 
       const result = await addTweetToServer({ title: 'Title', content: 'Content', author: 'Author' }, ['tag1']);
       expect(result).toBe(true);
-      expect(axios.post).toHaveBeenCalledWith(
-        `${config.applicationUri}${tweetsUrl}`,
+      expect(axios.post).toHaveBeenCalledWith(tweetsUrl,
         expect.objectContaining({
           title: 'Title',
           content: 'Content',

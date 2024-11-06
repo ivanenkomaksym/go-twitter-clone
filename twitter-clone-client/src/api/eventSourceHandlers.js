@@ -1,8 +1,8 @@
-import config from '../common';
+import { feedsUrl, getTaggedFeedsUrl } from '../common';
 
 // Function to set up EventSource for data changes
 export const setUpFeedsEventSource = (setDataCallback) => {
-    const eventSource = new EventSource(config.applicationUri + '/api/feeds', {
+    const eventSource = new EventSource(feedsUrl, {
       withCredentials: true
     });
   
@@ -27,7 +27,7 @@ export const setUpFeedsEventSource = (setDataCallback) => {
 // Function to set up EventSource for data changes
 export const setUpFeedsTagEventSource = (tag, setDataCallback) => {
     // Set up a new EventSource connection
-    const eventSource = new EventSource(config.applicationUri + `/api/feeds/${tag}`, {
+    const eventSource = new EventSource(getTaggedFeedsUrl(tag), {
       withCredentials: true
     });
 
