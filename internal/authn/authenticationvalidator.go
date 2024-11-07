@@ -9,6 +9,10 @@ import (
 	"twitter-clone/internal/models"
 )
 
+type IAuthenticationValidator interface {
+	ValidateAuthentication(w http.ResponseWriter, r *http.Request) *models.User
+}
+
 type AuthenticationValidator struct {
 	Authentication config.Authentication
 }

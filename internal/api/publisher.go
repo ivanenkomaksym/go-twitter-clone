@@ -7,6 +7,10 @@ import (
 	"github.com/ThreeDotsLabs/watermill/message"
 )
 
+type IPublisher interface {
+	Publish(topic string, event interface{}) error
+}
+
 type Publisher struct {
 	Publisher message.Publisher
 }

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 	"twitter-clone/internal/authn"
@@ -23,7 +24,7 @@ import (
 func StartRouter(configuration config.Configuration,
 	tweetRepo tweetrepo.TweetRepository,
 	feedRepo feedrepo.FeedRepository,
-	authenticationValidator authn.AuthenticationValidator) {
+	authenticationValidator authn.IAuthenticationValidator) {
 	logger := watermill.NewStdLogger(false, false)
 
 	pub, sub, err := messaging.SetupMessageRouter(configuration, feedRepo, logger)
@@ -58,10 +59,10 @@ func StartRouter(configuration config.Configuration,
 
 type Router struct {
 	Config                  config.Configuration
-	AuthenticationValidator authn.AuthenticationValidator
+	AuthenticationValidator authn.IAuthenticationValidator
 	OAuth2Router            authn.OAuth2Router
 	Subscriber              message.Subscriber
-	Publisher               Publisher
+	Publisher               IPublisher
 	TweetRepo               tweetrepo.TweetRepository
 	FeedRepo                feedrepo.FeedRepository
 	Logger                  watermill.LoggerAdapter
@@ -170,11 +171,15 @@ func (router Router) CreateTweet(w http.ResponseWriter, r *http.Request) {
 
 	err = router.Publisher.Publish(messaging.TweetCreatedTopic, event)
 	if err != nil {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	w.WriteHeader(201)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	if err := json.NewEncoder(w).Encode(createdTweet); err != nil {
+		logAndWriteError(router.Logger, w, err)
+	}
 }
 
 func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
@@ -187,7 +192,7 @@ func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 	var deleted = router.TweetRepo.DeleteTweet(tweetId)
 
 	if !deleted {
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusNotFound)
 	}
 
 	w.WriteHeader(204)
@@ -195,5 +200,5 @@ func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 
 func logAndWriteError(logger watermill.LoggerAdapter, w http.ResponseWriter, err error) {
 	logger.Error("Error", err, nil)
-	w.WriteHeader(500)
+	w.WriteHeader(http.StatusInternalServerError)
 }

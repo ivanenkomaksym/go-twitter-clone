@@ -17,7 +17,7 @@ import (
 type OAuth2Router struct {
 	Authentication          config.Authentication
 	RedirectURI             string
-	AuthenticationValidator AuthenticationValidator
+	AuthenticationValidator IAuthenticationValidator
 }
 
 type AuthenticationResult struct {

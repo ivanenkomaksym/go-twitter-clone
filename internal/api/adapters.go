@@ -16,7 +16,7 @@ import (
 
 type FeedStreamAdapter struct {
 	repo                    feedrepo.FeedRepository
-	authenticationValidator authn.AuthenticationValidator
+	authenticationValidator authn.IAuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }
 
@@ -56,7 +56,7 @@ func (f FeedStreamAdapter) Validate(r *http.Request, msg *message.Message) (ok b
 
 type TweetStreamAdapter struct {
 	repo                    tweetrepo.TweetRepository
-	authenticationValidator authn.AuthenticationValidator
+	authenticationValidator authn.IAuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }
 
@@ -101,7 +101,7 @@ type AllFeedsResponse struct {
 
 type AllFeedsStreamAdapter struct {
 	repo                    feedrepo.FeedRepository
-	authenticationValidator authn.AuthenticationValidator
+	authenticationValidator authn.IAuthenticationValidator
 	logger                  watermill.LoggerAdapter
 }
 
@@ -137,7 +137,7 @@ func (f AllFeedsStreamAdapter) Validate(r *http.Request, msg *message.Message) (
 
 type AllTweetsStreamAdapter struct {
 	repo                    repositories.TweetRepository
-	authenticationValidator authn.AuthenticationValidator
+	authenticationValidator authn.IAuthenticationValidator
 }
 
 func (adapter AllTweetsStreamAdapter) GetResponse(w http.ResponseWriter, r *http.Request) (interface{}, bool) {
