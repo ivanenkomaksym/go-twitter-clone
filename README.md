@@ -69,6 +69,18 @@ Tweet integration test will connect to `Tests_TweetsDb` MySql database. To run t
 go test .\internal\repositories\tweet\persistent_tweetrepository_test.go -v
 ```
 
+### Router tests
+
+`mockgen` can generate necessary mocks that can be used for testing:
+```
+mockgen -source .\internal\api\publisher.go -destination .\internal\__mocks__\api\mock_publisher.go -package=mocks
+```
+
+Router test can be run with
+```
+go test .\internal\api\router_test.go
+```
+
 ### Integration tests in CI using github workflow actions
 There's a dedicated workflow installed on repository that would do the following:
 1. Spin up required services: MySQL and Mongo
