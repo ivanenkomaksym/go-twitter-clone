@@ -19,7 +19,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [user, setUser] = useState<any | null>(null);
 
     const checkAuth = async () => {
-        const user = apiHandlers.fetchUserInfo();
+        const user = await apiHandlers.fetchUserInfo();
         setUser(user);
         setIsAuthenticated(user != null);
     };

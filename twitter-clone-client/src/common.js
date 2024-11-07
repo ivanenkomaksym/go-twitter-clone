@@ -7,10 +7,10 @@ console.log('Configuration:', config);
 
 export default config;
 
-export const loginAuthorizeUrl = config.applicationUrl + "/auth/google/login";
-export const logOutAuthorizeUrl = config.applicationUrl + "/auth/google/logout";
-export const userInfoUrl = config.applicationUrl + "/auth/google/userinfo";
-export const feedsUrl = config.applicationUrl + '/api/feeds';
-export const tweetsUrl = config.applicationUrl + '/api/tweets';
+export const loginAuthorizeUrl = config.applicationUri + "/auth/google/login";
+export const logOutAuthorizeUrl = config.applicationUri + "/auth/google/logout";
+export const userInfoUrl = config.applicationUri + "/auth/google/userinfo";
+export const feedsUrl = config.applicationUri + '/api/feeds';
+export const tweetsUrl = config.applicationUri + '/api/tweets';
 
 export const getTaggedFeedsUrl = (tag) => `${feedsUrl}/${tag}`

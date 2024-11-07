@@ -1,6 +1,6 @@
 import axios from "axios"
 import { v4 as uuidv4 } from 'uuid';
-import config, { feedsUrl, tweetsUrl, userInfoUrl, getTaggedFeedsUrl } from '../common';
+import { feedsUrl, tweetsUrl, userInfoUrl, getTaggedFeedsUrl } from '../common';
 
 // Function to fetch tags from the server
 export const fetchUserInfo = async () => {
