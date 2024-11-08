@@ -8,7 +8,7 @@ describe('E2E Tweet API Tests', () => {
     const golangtag = 'golang';
     const e2etestingtag = 'e2etesting';
     const tweettitle = 'e2e tests on GO app in CI';
-    let createdTweetId = "ca17e472-4d75-4bd5-9f75-4f9e61892591";
+    let createdTweetId = "";
 
     before(async () => {
         // Generate JWT and fetch access token
@@ -44,23 +44,31 @@ describe('E2E Tweet API Tests', () => {
 
     it('should create a new tweet', async () => {
         const url = `${baseurl}/tweets`;
-        const newTweet = {
-            id: createdTweetId,
+        const newTweetRequest = {
             title: tweettitle,
             content: 'How to run end-to-end tests on full scale GO environment during CI using github workflow actions',
-            author: 'testUser',
-            tags: [golangtag, e2etestingtag],
-            created_at: new Date().toISOString()
+            tags: [golangtag, e2etestingtag]
         };
 
         try {
-            const response = await axios.post(url, newTweet, {
+            const response = await axios.post(url, newTweetRequest, {
                 headers: {
                     Authorization: `${accessToken}`
                 }
             });
 
             expect(response.status).to.equal(201);
+
+            // Verify the response data
+            expect(response.data).to.be.an('object');
+            expect(response.data).to.have.property('id').that.is.a('string');
+            createdTweetId = response.data.id;
+            
+            expect(response.data).to.have.property('title').that.equals(newTweetRequest.title);
+            expect(response.data).to.have.property('content').that.equals(newTweetRequest.content);
+            expect(response.data).to.have.property('tags').that.is.an('array').that.deep.equals(newTweetRequest.tags);
+            expect(response.data).to.have.property('created_at').that.is.a('string'); // Check format if needed
+            expect(response.data).to.have.property('user').that.is.an('object');
         } catch (error) {
             console.error("Error creating tweet: ", error.response ? error.response.data : error.message);
             throw error;
