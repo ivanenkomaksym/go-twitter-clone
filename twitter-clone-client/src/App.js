@@ -7,7 +7,7 @@ import Profile from './components/pages/Profile.js';
 import Nav from "./components/pages/Nav.js"
 import Callback from './components/pages/Callback.js'
 import { AuthProvider } from './components/auth/AuthContext.tsx'
-import './App.css';
+import './styles/App.css';
 
 function App() {
   return (

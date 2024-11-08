@@ -133,34 +133,45 @@ npm test
 
 ```
 src/
+├── __mocks__/
+│   └── configMock.js                 # Mocks common.js
+│
+├── __tests__/
+│   ├── apiHandlers.tests.js          # Tests for API request functions
+│   └── eventSourceHandlers.test.js   # Tests for even source request functions
+│
 ├── api/
-│   ├── apiHandlers.js            # Contains all API request functions
-│   └── eventSourceHandlers.js    # Contains all event source request functions
+│   ├── apiHandlers.js                # Contains all API request functions
+│   └── eventSourceHandlers.js        # Contains all event source request functions
 │
 ├── components/
 │   ├── auth/
-│   │   └── AuthContext.tsx       # Contains AuthContext, checkAuth function
+│   │   └── AuthContext.tsx           # Contains AuthContext, checkAuth function
 │   │
 │   ├── pages/
-│   │   ├── Callback.js           # Callback page for authentication redirection
-│   │   ├── Logic.js              # Login page
-│   │   ├── Main.js               # Main page combining TagList, TweetList, InputForm
-│   │   └── Profile.js            # Profile page showing user info from AuthContext
+│   │   ├── Callback.js               # Callback page for authentication redirection
+│   │   ├── Logic.js                  # Login page
+│   │   ├── Main.js                   # Main page combining TagList, TweetList, InputForm
+│   │   ├── Nav.js                    # Main top navigation page
+│   │   └── Profile.js                # Profile page showing user info from AuthContext
 │   │
 │   ├── tweet/
-│   │   ├── InputForm.js          # Form for creating a new tweet
-│   │   ├── TagList.js            # Displays list of hashtags
-│   │   ├── TweetCard.jsx         # Represents a single tweet item in TweetList
-│   │   └── TweetList.js          # Displays a list of TweetCard components
+│   │   ├── InputForm.js              # Form for creating a new tweet
+│   │   ├── TagList.js                # Displays list of hashtags
+│   │   ├── TweetCard.jsx             # Represents a single tweet item in TweetList
+│   │   └── TweetList.js              # Displays a list of TweetCard components
 │   │
 ├── models/
-│   └── user.js                   # User model
+│   └── user.js                       # User model
 │
-├── App.js                        # Main app entry point
-├── index.js                      # Entry point for rendering the React app
-└── styles/
-    ├── pages/                    # Styles specific to page components
-    └── tweet/                    # Styles specific to tweet-related components
+├── styles/
+│   ├── pages/                        # Styles specific to page components
+│   └── tweet/                        # Styles specific to tweet-related components
+│
+├── App.js                            # Main app entry point
+├── common.js                         # Loads environemnt variables and defines constants
+├── env.json                          # Environment configuration
+└── index.js                          # Entry point for rendering the React app
 ```
 
 # References

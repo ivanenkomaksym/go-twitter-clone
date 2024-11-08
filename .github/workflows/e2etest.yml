@@ -17,6 +17,11 @@ jobs:
     steps:      
     - uses: actions/checkout@v4
 
+    # This is not optimized, as it will completely rebuild docker images despite the changes.
+    # Instead this could be improved in the following way:
+    # 1. Build only necessary server or client docker image, depending where push or pull_request happened
+    # 2. Run e2e tests with latest builds (from Docker Hub or local)
+    # 3. If tests pass, login to Docker Hub and push new image(s)
     - name: Run docker-compose
       uses: hoverkraft-tech/compose-action@v2.0.1
       with:
