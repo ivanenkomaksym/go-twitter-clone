@@ -13,6 +13,8 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 * Supports basic Google OAuth2
 * Runs database integration tests during CI using github workflow actions
 * Runs end-to-end tests on full scale environment during CI using github workflow actions
+* Includes common project structure for frontend projects
+* Runs frontend unit tests
 
 ![Alt text](docs/architecture.png?raw=true "Application architecture")
 
