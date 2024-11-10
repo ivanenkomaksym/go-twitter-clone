@@ -5,6 +5,7 @@ import (
 	"twitter-clone/internal/api"
 	"twitter-clone/internal/authn"
 	"twitter-clone/internal/config"
+	"twitter-clone/internal/messaging"
 	"twitter-clone/internal/repositories"
 )
 
@@ -23,9 +24,15 @@ func main() {
 		return
 	}
 
+	messageHandler, err := messaging.CreateMessageHandler(configuration)
+	if err != nil {
+		fmt.Println("Failed to create message handler: ", err)
+		return
+	}
+
 	authenticationValidator := authn.AuthenticationValidator{
 		Authentication: configuration.Authentication,
 	}
 
-	api.StartRouter(configuration, tweetRepo, feedRepo, authenticationValidator)
+	api.StartRouter(configuration, tweetRepo, feedRepo, messageHandler, authenticationValidator)
 }

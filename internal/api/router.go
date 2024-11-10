@@ -24,10 +24,11 @@ import (
 func StartRouter(configuration config.Configuration,
 	tweetRepo tweetrepo.TweetRepository,
 	feedRepo feedrepo.FeedRepository,
+	messageHandler messaging.MessageHandler,
 	authenticationValidator authn.IAuthenticationValidator) {
 	logger := watermill.NewStdLogger(false, false)
 
-	pub, sub, err := messaging.SetupMessageRouter(configuration, feedRepo, logger)
+	pub, sub, err := messageHandler.SetupMessageRouter(configuration, feedRepo, logger)
 	if err != nil {
 		panic(err)
 	}

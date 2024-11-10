@@ -20,7 +20,10 @@ const (
 	FeedUpdatedTopic  = "feed-updated"
 )
 
-func SetupMessageRouter(
+type NATSMessageHandler struct {
+}
+
+func (n *NATSMessageHandler) SetupMessageRouter(
 	configuration config.Configuration,
 	feedRepo repositories.FeedRepository,
 	logger watermill.LoggerAdapter,
