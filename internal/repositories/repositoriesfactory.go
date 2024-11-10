@@ -14,8 +14,7 @@ func CreateTweetRepository(configuration config.Configuration) (tweetrepo.TweetR
 	case config.Persistent:
 		return tweetrepo.NewPersistentTweetRepository(configuration)
 	case config.Cloud:
-		// TODO: Add FirestoreTweetRepository
-		return &tweetrepo.InMemoryTweetRepository{}, nil
+		return tweetrepo.NewFirestoreTweetRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}
