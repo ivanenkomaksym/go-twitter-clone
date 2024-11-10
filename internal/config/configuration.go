@@ -13,16 +13,19 @@ type Mode uint8
 const (
 	InMemory Mode = iota + 1
 	Persistent
+	Cloud
 )
 
 var (
 	Mode_name = map[uint8]string{
 		1: "inmemory",
 		2: "persistent",
+		3: "cloud",
 	}
 	Mode_value = map[string]uint8{
 		"inmemory":   1,
 		"persistent": 2,
+		"cloud":      3,
 	}
 )
 
@@ -83,4 +86,5 @@ type Configuration struct {
 	Authentication Authentication
 	RedirectURI    string
 	AllowOrigin    string // When using credentials (like cookies or HTTP authentication), CORS header Access-Control-Allow-Origin cannot be set to *
+	ProjectId      string
 }

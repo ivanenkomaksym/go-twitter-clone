@@ -13,6 +13,9 @@ func CreateTweetRepository(configuration config.Configuration) (tweetrepo.TweetR
 		return &tweetrepo.InMemoryTweetRepository{}, nil
 	case config.Persistent:
 		return tweetrepo.NewPersistentTweetRepository(configuration)
+	case config.Cloud:
+		// TODO: Add FirestoreTweetRepository
+		return &tweetrepo.InMemoryTweetRepository{}, nil
 	default:
 		return nil, errors.New("unknown mode")
 	}
@@ -24,6 +27,8 @@ func CreateFeedRepository(configuration config.Configuration) (feedrepo.FeedRepo
 		return &feedrepo.InMemoryFeedRepository{}, nil
 	case config.Persistent:
 		return feedrepo.NewPersistentFeedRepository(configuration)
+	case config.Cloud:
+		return feedrepo.NewFirestoreFeedRepository(configuration)
 	default:
 		return nil, errors.New("unknown mode")
 	}
