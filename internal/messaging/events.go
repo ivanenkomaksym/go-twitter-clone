@@ -5,6 +5,13 @@ import (
 	"twitter-clone/internal/models"
 )
 
+const (
+	HandlerName       = "update-feeds-on-tweet-created"
+	TweetCreatedTopic = "tweet-created"
+	TweetUpdatedTopic = "tweet-updated"
+	FeedUpdatedTopic  = "feed-updated"
+)
+
 type TweetCreated struct {
 	Tweet models.Tweet `json:"tweet"`
 

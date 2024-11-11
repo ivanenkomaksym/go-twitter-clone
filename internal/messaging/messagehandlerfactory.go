@@ -12,7 +12,7 @@ func CreateMessageHandler(configuration config.Configuration) (MessageHandler, e
 	case config.Persistent:
 		return &NATSMessageHandler{}, nil
 	case config.Cloud:
-		return nil, errors.ErrUnsupported
+		return &PubSubMessageHandler{}, nil
 	default:
 		return nil, errors.New("unknown mode")
 	}

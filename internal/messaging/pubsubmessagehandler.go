@@ -6,16 +6,15 @@ import (
 	repositories "twitter-clone/internal/repositories/feed"
 
 	"github.com/ThreeDotsLabs/watermill"
-	"github.com/ThreeDotsLabs/watermill-nats/pkg/nats"
+	"github.com/ThreeDotsLabs/watermill-googlecloud/pkg/googlecloud"
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/ThreeDotsLabs/watermill/message/router/middleware"
-	"github.com/nats-io/stan.go"
 )
 
-type NATSMessageHandler struct {
+type PubSubMessageHandler struct {
 }
 
-func (n *NATSMessageHandler) SetupMessageRouter(
+func (n *PubSubMessageHandler) SetupMessageRouter(
 	configuration config.Configuration,
 	feedRepo repositories.FeedRepository,
 	logger watermill.LoggerAdapter,
@@ -26,27 +25,24 @@ func (n *NATSMessageHandler) SetupMessageRouter(
 	}
 	router.AddMiddleware(middleware.Recoverer)
 
-	natsURL := stan.NatsURL(configuration.NATSUrl)
-	pub, err := nats.NewStreamingPublisher(nats.StreamingPublisherConfig{
-		ClusterID:   "test-cluster",
-		ClientID:    "publisher",
-		StanOptions: []stan.Option{natsURL},
-		Marshaler:   nats.GobMarshaler{},
+	// Google Pub/Sub Publisher setup
+	pub, err := googlecloud.NewPublisher(googlecloud.PublisherConfig{
+		ProjectID: configuration.ProjectId,
+		Marshaler: googlecloud.DefaultMarshalerUnmarshaler{},
 	}, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	sub, err := nats.NewStreamingSubscriber(nats.StreamingSubscriberConfig{
-		ClusterID:   "test-cluster",
-		ClientID:    "subscriber",
-		StanOptions: []stan.Option{natsURL},
-		Unmarshaler: nats.GobMarshaler{},
+	// Google Pub/Sub Subscriber setup
+	sub, err := googlecloud.NewSubscriber(googlecloud.SubscriberConfig{
+		ProjectID: configuration.ProjectId,
 	}, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 
+	// Add handler to process incoming messages
 	router.AddHandler(
 		HandlerName,
 		TweetCreatedTopic,
