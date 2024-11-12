@@ -14,6 +14,7 @@ services:
       target: final
     container_name: twitter-clone-server
     environment:
+      - "Mode=Persistent"
       - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"

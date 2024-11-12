@@ -9,7 +9,10 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${file}"
+            "program": "${file}",
+            "env": {
+                "GOOGLE_APPLICATION_CREDENTIALS": "D:\\Downloads\\twitter-clone-438407-4b74b07d276e.json"
+              }
         }
     ]
 }
