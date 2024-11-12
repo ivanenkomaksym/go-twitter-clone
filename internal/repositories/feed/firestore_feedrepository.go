@@ -8,6 +8,8 @@ import (
 
 	"cloud.google.com/go/firestore"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type FirestoreFeedRepository struct {
@@ -25,7 +27,25 @@ func NewFirestoreFeedRepository(configuration config.Configuration) (*FirestoreF
 }
 
 func (r *FirestoreFeedRepository) CreateFeed(name string) error {
-	_, err := r.client.Collection("feeds").Doc(name).Set(context.Background(), map[string]interface{}{
+	ctx := context.Background()
+
+	// Reference to the feed document for the given name
+	feedDocRef := r.client.Collection("feeds").Doc(name)
+
+	// Check if the document already exists
+	docSnapshot, err := feedDocRef.Get(ctx)
+	if err != nil && status.Code(err) != codes.NotFound {
+		// If the error is not 'NotFound', something else went wrong
+		return err
+	}
+
+	// If the document already exists, we don't create it again
+	if docSnapshot.Exists() {
+		return nil
+	}
+
+	// Otherwise, create the feed document lazily
+	_, err = feedDocRef.Set(ctx, map[string]interface{}{
 		"name":       name,
 		"created_at": time.Now(),
 	})
@@ -76,24 +96,47 @@ func (r *FirestoreFeedRepository) AppendTweet(tweet models.Tweet) error {
 	for _, tag := range tweet.Tags {
 		feedDocRef := r.client.Collection("feeds").Doc(tag)
 
-		// Run a Firestore transaction to safely append the tweet.
+		// Run a Firestore transaction to safely check and append the tweet.
 		err := r.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
-			// Check if the tweet already exists in this feed's tweets.
-			tweetsCollection := feedDocRef.Collection("tweets")
-			tweetDoc := tweetsCollection.Doc(tweet.ID)
-			doc, err := tweetDoc.Get(ctx)
-			if err == nil && doc.Exists() {
-				// Tweet already exists, no need to add it again.
-				return nil
+			// Check if the feed document exists.
+			doc, err := tx.Get(feedDocRef)
+			if err != nil {
+				if status.Code(err) == codes.NotFound {
+					// Document does not exist, so we initialize it with an empty tweets array.
+					err := tx.Set(feedDocRef, map[string]interface{}{
+						"tweets": []models.Tweet{},
+					})
+					if err != nil {
+						return err
+					}
+				} else {
+					return err // Return any other error.
+				}
 			}
 
-			// If tweet doesn't exist, add it at the beginning of the tweets subcollection.
-			_, err = tweetsCollection.Doc(tweet.ID).Set(ctx, tweet)
+			var feedData struct {
+				Tweets []models.Tweet `firestore:"tweets"`
+			}
+
+			err = doc.DataTo(&feedData)
+			if err != nil {
+				return err
+			}
+
+			updatedTweets := append(feedData.Tweets, tweet)
+
+			// Append the tweet to the tweets array using ArrayUnion to avoid duplicates.
+			err = tx.Update(feedDocRef, []firestore.Update{
+				{
+					Path:  "tweets",
+					Value: updatedTweets,
+				},
+			})
 			return err
 		})
 
 		if err != nil {
-			return err
+			return err // Return if there's an error in any transaction.
 		}
 	}
 
