@@ -23,11 +23,10 @@ jobs:
         go-version: '1.23.2'
         check-latest: true
 
-    - name: Build
-      run: go build -v ./...
-
-    - name: Run tests
-      run: go test ./... -v
+    - name: Build and Test Go App
+      run: |
+        go build -v ./...
+        go test ./... -v
 
   build-client:
     runs-on: ubuntu-latest
@@ -38,7 +37,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-
+    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
@@ -49,10 +48,9 @@ jobs:
     - run: npm ci
       working-directory: ./twitter-clone-client
 
-    - run: npm run build --if-present
-      working-directory: ./twitter-clone-client
-
-    - run: npm test
+    - run: |
+        npm run build --if-present
+        npm test
       working-directory: ./twitter-clone-client
 
   e2e-tests:
@@ -60,8 +58,6 @@ jobs:
     needs: [build-client, build-server]
 
     steps:
-    - uses: actions/checkout@v4
-
     - name: Run docker-compose
       uses: hoverkraft-tech/compose-action@v2.0.1
       with:
@@ -73,21 +69,12 @@ jobs:
         OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
         OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET }}
 
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
-
-    - name: Install dependencies
-      run: |
-        cd e2e_tests
-        npm install
-
     - name: Run e2e tests
       env:
         GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       run: |
         cd e2e_tests
+        npm install
         npm test
 
   push-images:
@@ -116,4 +103,4 @@ jobs:
         IMAGE_TAG="ivanenkomak/twitter-clone-client:latest"
         DOCKERFILE="Dockerfile"
         echo "Pushing Docker image with latest tag: ${IMAGE_TAG}"
-        docker buildx build -t "${IMAGE_TAG}" --file "${DOCKERFILE}" twitter-clone-client --push
+        docker buildx build -t "${IMAGE_TAG}" --file "${DOCKERFILE}" ./twitter-clone-client --push
