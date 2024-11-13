@@ -1,3 +1,5 @@
+version: '3.8'
+
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Docker compose reference guide at
 # https://docs.docker.com/compose/compose-file/
@@ -9,17 +11,21 @@
 # https://github.com/docker/awesome-compose
 services:
   go-twitter-clone-server:
+    image: ${SERVER_IMAGE}
     build:
       context: .
       target: final
     container_name: twitter-clone-server
     environment:
       - "Mode=Persistent"
+      - "ProjectId=${PROJECT_ID}"
       - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"
       - "ApiServer:ApplicationUrl=0.0.0.0:8016"
       - "Authentication:Enable=true"
+      - "Authentication:OAuth2:ClientID=${OAUTH2_CLIENT_ID}"
+      - "Authentication:OAuth2:ClientSecret=${OAUTH2_CLIENT_SECRET}"
     ports:
       - 8016:8016
     depends_on:
@@ -35,6 +41,7 @@ services:
       - nats
 
   go-twitter-clone-client:
+    image: ${CLIENT_IMAGE}
     build:
       context: ./twitter-clone-client
     container_name: twitter-clone-client
