@@ -32,6 +32,21 @@ func ReadConfiguration() Configuration {
 		configuration.Mode, _ = ParseMode(modeEnvVar)
 	}
 
+	if projectIdEnvVar := os.Getenv("ProjectId"); projectIdEnvVar != "" {
+		log.Println("Overriding ProjectId from environment variable: ", projectIdEnvVar)
+		configuration.ProjectId = projectIdEnvVar
+	}
+
+	if clientIdEnvVar := os.Getenv("Authentication:OAuth2:ClientID"); clientIdEnvVar != "" {
+		log.Println("Overriding Authentication:OAuth2:ClientID from environment variable: ", clientIdEnvVar)
+		configuration.Authentication.OAuth2.ClientID = clientIdEnvVar
+	}
+
+	if clientSecretEnvVar := os.Getenv("Authentication:OAuth2:ClientSecret"); clientSecretEnvVar != "" {
+		log.Println("Overriding Authentication:OAuth2:ClientSecret from environment variable: ", clientSecretEnvVar)
+		configuration.Authentication.OAuth2.ClientSecret = clientSecretEnvVar
+	}
+
 	if tweetsStorageConnectionStringEnvVar := os.Getenv("TweetsStorage:ConnectionString"); tweetsStorageConnectionStringEnvVar != "" {
 		log.Println("Overriding TweetsStorage:ConnectionString from environment variable: ", tweetsStorageConnectionStringEnvVar)
 		configuration.TweetsStorage.ConnectionString = tweetsStorageConnectionStringEnvVar
