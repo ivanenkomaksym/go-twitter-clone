@@ -97,7 +97,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
@@ -114,6 +114,6 @@ jobs:
     - name: Push client image
       run: |
         IMAGE_TAG="ivanenkomak/twitter-clone-client:latest"
-        DOCKERFILE="twitter-clone-client/Dockerfile"
+        DOCKERFILE="Dockerfile"
         echo "Pushing Docker image with latest tag: ${IMAGE_TAG}"
-        docker buildx build -t "${IMAGE_TAG}" --file "${DOCKERFILE}" . --push
+        docker buildx build -t "${IMAGE_TAG}" --file "${DOCKERFILE}" twitter-clone-client --push
