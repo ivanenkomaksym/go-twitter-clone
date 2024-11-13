@@ -62,11 +62,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set environment variables
-      run: |
-        echo "CLIENT_IMAGE=ivanenkomak/twitter-clone-client:latest" >> $GITHUB_ENV
-        echo "SERVER_IMAGE=ivanenkomak/twitter-clone-server:latest" >> $GITHUB_ENV
-
     - name: Run docker-compose
       uses: hoverkraft-tech/compose-action@v2.0.1
       with:
@@ -101,6 +96,8 @@ jobs:
     if: success()
 
     steps:
+    - uses: actions/checkout@v4
+    
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
