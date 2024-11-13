@@ -68,8 +68,9 @@ jobs:
         echo "SERVER_IMAGE=ivanenkomak/twitter-clone-server:latest" >> $GITHUB_ENV
 
     - name: Run docker-compose
-      run: |
-        docker-compose -f ./compose.yaml up -d --build
+      uses: hoverkraft-tech/compose-action@v2.0.1
+      with:
+        compose-file: "./compose.yaml"
       env:
         CLIENT_IMAGE: ivanenkomak/twitter-clone-client:latest
         SERVER_IMAGE: ivanenkomak/twitter-clone-server:latest
