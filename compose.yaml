@@ -11,21 +11,20 @@ version: '3.8'
 # https://github.com/docker/awesome-compose
 services:
   go-twitter-clone-server:
-    image: ${SERVER_IMAGE}
+    image: ivanenkomak/twitter-clone-server:latest
+    pull_policy: always
     build:
       context: ./server
-      target: final
+      dockerfile: Dockerfile
     container_name: twitter-clone-server
     environment:
       - "Mode=Persistent"
-      - "ProjectId=${PROJECT_ID}"
       - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"
       - "ApiServer:ApplicationUrl=0.0.0.0:8016"
       - "Authentication:Enable=true"
-      - "Authentication:OAuth2:ClientID=${OAUTH2_CLIENT_ID}"
-      - "Authentication:OAuth2:ClientSecret=${OAUTH2_CLIENT_SECRET}"
+      - "Authentication:OAuth2:ClientID"
     ports:
       - 8016:8016
     depends_on:
@@ -41,9 +40,11 @@ services:
       - nats
 
   go-twitter-clone-client:
-    image: ${CLIENT_IMAGE}
+    image: ivanenkomak/twitter-clone-client:latest
+    pull_policy: always
     build:
       context: ./client
+      dockerfile: Dockerfile
     container_name: twitter-clone-client
     ports:
       - 3000:3000
