@@ -2,14 +2,14 @@ name: go-twitter-clone
 region: eu-central-1
 yamlVersion: 2
 backend:
-  path: cmd
+  path: server/cmd
   language:
     name: go
   environment:
     Mode: Persistent
     Authentication:Enable: "false"
 frontend:
-  path: twitter-clone-client
+  path: client
   sdk:
     language: ts
   publish: dist

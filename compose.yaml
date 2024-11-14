@@ -13,7 +13,7 @@ services:
   go-twitter-clone-server:
     image: ${SERVER_IMAGE}
     build:
-      context: .
+      context: ./server
       target: final
     container_name: twitter-clone-server
     environment:
@@ -43,7 +43,7 @@ services:
   go-twitter-clone-client:
     image: ${CLIENT_IMAGE}
     build:
-      context: ./twitter-clone-client
+      context: ./client
     container_name: twitter-clone-client
     ports:
       - 3000:3000
