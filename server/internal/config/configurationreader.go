@@ -17,6 +17,9 @@ func ReadConfiguration() Configuration {
 	configuration := Configuration{}
 	json.Unmarshal(appsettingsContent, &configuration)
 
+	googleApplicationCredentialsEnvVar := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	log.Println("Read GOOGLE_APPLICATION_CREDENTIALS from environment variable: ", googleApplicationCredentialsEnvVar)
+
 	// Set default google endpoints
 	if authenticationEnableEnvVar := os.Getenv("Authentication:Enable"); authenticationEnableEnvVar != "" {
 		log.Println("Overriding Authentication:Enable from environment variable: ", authenticationEnableEnvVar)
