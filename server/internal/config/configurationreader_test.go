@@ -15,7 +15,7 @@ func TestReadConfiguration_DefaultsFromEmbeddedFile(t *testing.T) {
 	// Clear environment variables to use only appsettings.json defaults
 	os.Clearenv()
 
-	expectedMode, _ := config.ParseMode("Cloud")
+	expectedMode, _ := config.ParseMode("InMemory")
 	expected := config.Configuration{
 		Mode:      expectedMode,
 		ProjectId: "{your-project-id}",

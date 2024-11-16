@@ -8,7 +8,7 @@ import (
 func CreateMessageHandler(configuration config.Configuration) (MessageHandler, error) {
 	switch configuration.Mode {
 	case config.InMemory:
-		return nil, errors.ErrUnsupported
+		return &NullMessageHandler{}, nil
 	case config.Persistent:
 		return &NATSMessageHandler{}, nil
 	case config.Cloud:
