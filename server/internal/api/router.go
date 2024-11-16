@@ -135,8 +135,15 @@ func (router Router) Mux() *chi.Mux {
 		r.Get("/feeds", allFeedsHandler)
 	})
 
+	// Use defer to close the router and subscriber when the function exits
+	defer func() {
+		if err := router.Subscriber.Close(); err != nil {
+			router.Logger.Error("Failed to close Pub/Sub subscriber", err, nil)
+		}
+	}()
+
 	go func() {
-		err = sseRouter.Run(context.Background())
+		err := sseRouter.Run(context.Background())
 		if err != nil {
 			panic(err)
 		}

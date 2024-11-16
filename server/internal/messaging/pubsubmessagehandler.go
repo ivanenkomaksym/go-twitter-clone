@@ -37,6 +37,19 @@ func (n *PubSubMessageHandler) SetupMessageRouter(
 	// Google Pub/Sub Subscriber setup
 	sub, err := googlecloud.NewSubscriber(googlecloud.SubscriberConfig{
 		ProjectID: configuration.ProjectId,
+		GenerateSubscriptionName: func(topic string) string {
+			return topic + "-sse"
+		},
+	}, logger)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	routerSub, err := googlecloud.NewSubscriber(googlecloud.SubscriberConfig{
+		ProjectID: configuration.ProjectId,
+		GenerateSubscriptionName: func(topic string) string {
+			return topic + "-router"
+		},
 	}, logger)
 	if err != nil {
 		return nil, nil, err
@@ -46,7 +59,7 @@ func (n *PubSubMessageHandler) SetupMessageRouter(
 	router.AddHandler(
 		HandlerName,
 		TweetCreatedTopic,
-		sub,
+		routerSub,
 		FeedUpdatedTopic,
 		pub,
 		func(msg *message.Message) (messages []*message.Message, err error) {
