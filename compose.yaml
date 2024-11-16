@@ -1,3 +1,5 @@
+version: '3.8'
+
 # Comments are provided throughout this file to help you get started.
 # If you need more help, visit the Docker compose reference guide at
 # https://docs.docker.com/compose/compose-file/
@@ -9,17 +11,27 @@
 # https://github.com/docker/awesome-compose
 services:
   go-twitter-clone-server:
+    image: ivanenkomak/twitter-clone-server:latest
+    pull_policy: always
     build:
-      context: .
-      target: final
+      context: ./server
+      dockerfile: Dockerfile
     container_name: twitter-clone-server
+    volumes:
+      # Map the JSON file from your local system to the container
+      - ./secrets/service-account.json:/secrets/service-account.json:r
     environment:
-      - "Mode=Persistent"
+      - "Mode=${MODE}"
+      - "ProjectId=${PROJECT_ID}"
       - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
       - "NATSUrl=nats://twitter-nats:4222"
       - "ApiServer:ApplicationUrl=0.0.0.0:8016"
       - "Authentication:Enable=true"
+      - "Authentication:OAuth2:ClientID=${OAUTH2_CLIENT_ID}"
+      - "Authentication:OAuth2:ClientSecret=${OAUTH2_CLIENT_SECRET}"
+      - "GOOGLE_SERVICE_ACCOUNT_KEY=${GOOGLE_SERVICE_ACCOUNT_KEY}"
+      - "GOOGLE_APPLICATION_CREDENTIALS=/secrets/service-account.json"
     ports:
       - 8016:8016
     depends_on:
@@ -35,8 +47,11 @@ services:
       - nats
 
   go-twitter-clone-client:
+    image: ivanenkomak/twitter-clone-client:latest
+    pull_policy: always
     build:
-      context: ./twitter-clone-client
+      context: ./client
+      dockerfile: Dockerfile
     container_name: twitter-clone-client
     ports:
       - 3000:3000
