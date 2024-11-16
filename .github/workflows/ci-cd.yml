@@ -10,6 +10,17 @@ env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
+  MODE: Cloud
+  PROJECT_ID: ${{ secrets.PROJECT_ID }}
+  OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
+  OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET}}
+  OAUTH2_REDIRECT_URI: https://twitter-clone-server-120740449329.europe-central2.run.app/auth/google/callback
+  GOOGLE_SERVICE_ACCOUNT_KEY: /secrets/service-account.json
+  GOOGLE_APPLICATION_CREDENTIALS: /secrets/service-account.json
+  REDIRECT_URI: https://twitter-clone-client-120740449329.europe-central2.run.app/callback
+  ALLOW_ORIGIN: https://twitter-clone-client-120740449329.europe-central2.run.app/
+  APISERVER_APPLICATIONURL: 0.0.0.0:8080
+
 jobs:
   build-server:
     runs-on: ubuntu-latest
@@ -88,7 +99,7 @@ jobs:
       run: mkdir -p ./secrets
 
     - name: Copy service account JSON
-      run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}" > ./secrets/service-account.json
+      run: echo "${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}" > ./secrets/service-account.json
 
     - name: Cache Docker layers
       uses: actions/cache@v3
@@ -106,6 +117,9 @@ jobs:
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
         OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
         OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET }}
+        OAUTH2_REDIRECT_URI: http://localhost:8016/auth/google/callback
+        REDIRECT_URI: http://localhost:3000/callback
+        ALLOW_ORIGIN: http://localhost:3000/
 
     - name: Install Node.js
       uses: actions/setup-node@v3
@@ -119,7 +133,7 @@ jobs:
 
     - name: Run e2e tests
       env:
-        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}
       run: |
         cd e2e_tests
         npm test
@@ -166,13 +180,13 @@ jobs:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          credentials_json: ${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}
 
       # Install Google Cloud SDK
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ secrets.PROJECT_ID }}
+          project_id: ${{ env.PROJECT_ID }}
 
       # Deploy to Cloud Run
       - name: Deploy server to Cloud Run
@@ -182,7 +196,7 @@ jobs:
             --platform managed \
             --region europe-central2 \
             --allow-unauthenticated \
-            --set-env-vars "MODE=Cloud,PROJECT_ID=${{ secrets.PROJECT_ID }},AUTHENTICATION_OAUTH2_CLIENTID=${{ secrets.OAUTH2_CLIENT_ID }},AUTHENTICATION_OAUTH2_CLIENTSECRET=${{ secrets.OAUTH2_CLIENT_SECRET }},APISERVER_APPLICATIONURL=0.0.0.0:8080"
+            --set-env-vars "MODE=${{ env.MODE }},PROJECT_ID=${{ env.PROJECT_ID }},AUTHENTICATION_OAUTH2_CLIENTID=${{ env.OAUTH2_CLIENT_ID }},AUTHENTICATION_OAUTH2_CLIENTSECRET=${{ env.OAUTH2_CLIENT_SECRET }},AUTHENTICATION_OAUTH2_REDIRECT_URI=${{ env.OAUTH2_REDIRECT_URI }},REDIRECT_URI=${{ env.REDIRECT_URI }},ALLOW_ORIGIN=${{ env.ALLOW_ORIGIN }},APISERVER_APPLICATIONURL=${{ env.APISERVER_APPLICATIONURL }}"
 
           # Deploy client image to Cloud Run
       - name: Deploy client to Cloud Run

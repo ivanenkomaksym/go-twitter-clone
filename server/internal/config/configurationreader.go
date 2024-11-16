@@ -50,6 +50,11 @@ func ReadConfiguration() Configuration {
 		configuration.Authentication.OAuth2.ClientSecret = clientSecretEnvVar
 	}
 
+	if redirectUrlEnvVar := os.Getenv("AUTHENTICATION_OAUTH2_REDIRECT_URI"); redirectUrlEnvVar != "" {
+		log.Println("Overriding AUTHENTICATION_OAUTH2_REDIRECT_URI from environment variable: ", redirectUrlEnvVar)
+		configuration.Authentication.OAuth2.RedirectURL = redirectUrlEnvVar
+	}
+
 	if tweetsStorageConnectionStringEnvVar := os.Getenv("TWEETSSTORAGE_CONNECTIONSTRING"); tweetsStorageConnectionStringEnvVar != "" {
 		log.Println("Overriding TWEETSSTORAGE_CONNECTIONSTRING from environment variable: ", tweetsStorageConnectionStringEnvVar)
 		configuration.TweetsStorage.ConnectionString = tweetsStorageConnectionStringEnvVar
@@ -68,6 +73,23 @@ func ReadConfiguration() Configuration {
 	if natsUrlStringEnvVar := os.Getenv("NATS_URL"); natsUrlStringEnvVar != "" {
 		log.Println("Overriding NATS_URL from environment variable: ", natsUrlStringEnvVar)
 		configuration.NATSUrl = natsUrlStringEnvVar
+	}
+
+	if redirectUriStringEnvVar := os.Getenv("REDIRECT_URI"); redirectUriStringEnvVar != "" {
+		log.Println("Overriding REDIRECT_URI from environment variable: ", redirectUriStringEnvVar)
+		configuration.RedirectURI = redirectUriStringEnvVar
+	}
+
+	if allowOriginStringEnvVar := os.Getenv("ALLOW_ORIGIN"); allowOriginStringEnvVar != "" {
+		log.Println("Overriding ALLOW_ORIGIN from environment variable: ", allowOriginStringEnvVar)
+		configuration.AllowOrigin = allowOriginStringEnvVar
+	}
+
+	configurationJson, err := json.MarshalIndent(configuration, "", "  ")
+	if err != nil {
+		log.Println("Error marshalling configuration to JSON: ", err)
+	} else {
+		log.Println("Configuration: ", string(configurationJson))
 	}
 
 	return configuration

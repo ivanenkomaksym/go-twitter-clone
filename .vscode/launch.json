@@ -11,8 +11,13 @@
             "mode": "auto",
             "program": "${file}",
             "env": {
-                "MODE": "InMemory",
-                "AUTHENTICATION_ENABLE": "false",
+                "MODE":"Cloud",
+                "PROJECT_ID":"twitter-clone-438407",
+                "AUTHENTICATION_OAUTH2_CLIENTID":"120740449329-6uo779hqeoaaitj6t92gt88e733cv3bv",
+                "AUTHENTICATION_OAUTH2_CLIENTSECRET":"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",
+                "AUTHENTICATION_OAUTH2_REDIRECT_URI": "http://localhost:8016/auth/google/callback",
+                "GOOGLE_SERVICE_ACCOUNT_KEY":"/secrets/service-account.json",
+                "GOOGLE_APPLICATION_CREDENTIALS":"/secrets/service-account.json",
                 "GOOGLE_APPLICATION_CREDENTIALS": "D:\\Downloads\\twitter-clone-438407-4b74b07d276e.json"
               }
         }
