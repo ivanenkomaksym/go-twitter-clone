@@ -57,15 +57,15 @@ func TestReadConfiguration_DefaultsFromEmbeddedFile(t *testing.T) {
 
 func TestReadConfiguration_WithEnvVars(t *testing.T) {
 	// Set environment variables for testing
-	os.Setenv("Authentication:Enable", "true")
-	os.Setenv("Mode", "development")
-	os.Setenv("ProjectId", "test-project-id")
-	os.Setenv("Authentication:OAuth2:ClientID", "test-client-id")
-	os.Setenv("Authentication:OAuth2:ClientSecret", "test-client-secret")
-	os.Setenv("TweetsStorage:ConnectionString", "test-tweets-connection")
-	os.Setenv("FeedsStorage:ConnectionString", "test-feeds-connection")
-	os.Setenv("ApiServer:ApplicationUrl", "http://localhost:8080")
-	os.Setenv("NATSUrl", "nats://localhost:4222")
+	os.Setenv("AUTHENTICATION_ENABLE", "true")
+	os.Setenv("MODE", "development")
+	os.Setenv("PROJECT_ID", "test-project-id")
+	os.Setenv("AUTHENTICATION_OAUTH2_CLIENTID", "test-client-id")
+	os.Setenv("AUTHENTICATION_OAUTH2_CLIENTSECRET", "test-client-secret")
+	os.Setenv("TWEETSSTORAGE_CONNECTIONSTRING", "test-tweets-connection")
+	os.Setenv("FEEDSSTORAGE_CONNECTIONSTRING", "test-feeds-connection")
+	os.Setenv("APISERVER_APPLICATIONURL", "http://localhost:8080")
+	os.Setenv("NATS_URL", "nats://localhost:4222")
 
 	defer func() {
 		// Clean up environment variables after the test
@@ -115,13 +115,13 @@ func TestReadConfiguration_WithEnvVars(t *testing.T) {
 }
 
 func TestReadConfiguration_EnvironmentVariableOverrides(t *testing.T) {
-	os.Setenv("Authentication:Enable", "false")
+	os.Setenv("AUTHENTICATION_ENABLE", "false")
 	defer os.Clearenv()
 
 	// Check if the `Authentication.Enable` gets overridden correctly by the environment variable
 	config := config.ReadConfiguration()
 
-	expected, _ := strconv.ParseBool(os.Getenv("Authentication:Enable"))
+	expected, _ := strconv.ParseBool(os.Getenv("AUTHENTICATION_ENABLE"))
 	if config.Authentication.Enable != expected {
 		t.Errorf("Expected Authentication.Enable to be %v, got %v", expected, config.Authentication.Enable)
 	}

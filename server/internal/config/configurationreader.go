@@ -21,8 +21,8 @@ func ReadConfiguration() Configuration {
 	log.Println("Read GOOGLE_APPLICATION_CREDENTIALS from environment variable: ", googleApplicationCredentialsEnvVar)
 
 	// Set default google endpoints
-	if authenticationEnableEnvVar := os.Getenv("Authentication:Enable"); authenticationEnableEnvVar != "" {
-		log.Println("Overriding Authentication:Enable from environment variable: ", authenticationEnableEnvVar)
+	if authenticationEnableEnvVar := os.Getenv("AUTHENTICATION_ENABLE"); authenticationEnableEnvVar != "" {
+		log.Println("Overriding AUTHENTICATION_ENABLE from environment variable: ", authenticationEnableEnvVar)
 		configuration.Authentication.Enable, _ = strconv.ParseBool(authenticationEnableEnvVar)
 	}
 
@@ -30,43 +30,43 @@ func ReadConfiguration() Configuration {
 		configuration.Authentication.OAuth2.Endpoint = google.Endpoint
 	}
 
-	if modeEnvVar := os.Getenv("Mode"); modeEnvVar != "" {
-		log.Println("Overriding Mode from environment variable: ", modeEnvVar)
+	if modeEnvVar := os.Getenv("MODE"); modeEnvVar != "" {
+		log.Println("Overriding MODE from environment variable: ", modeEnvVar)
 		configuration.Mode, _ = ParseMode(modeEnvVar)
 	}
 
-	if projectIdEnvVar := os.Getenv("ProjectId"); projectIdEnvVar != "" {
-		log.Println("Overriding ProjectId from environment variable: ", projectIdEnvVar)
+	if projectIdEnvVar := os.Getenv("PROJECT_ID"); projectIdEnvVar != "" {
+		log.Println("Overriding PROJECT_ID from environment variable: ", projectIdEnvVar)
 		configuration.ProjectId = projectIdEnvVar
 	}
 
-	if clientIdEnvVar := os.Getenv("Authentication:OAuth2:ClientID"); clientIdEnvVar != "" {
-		log.Println("Overriding Authentication:OAuth2:ClientID from environment variable: ", clientIdEnvVar)
+	if clientIdEnvVar := os.Getenv("AUTHENTICATION_OAUTH2_CLIENTID"); clientIdEnvVar != "" {
+		log.Println("Overriding AUTHENTICATION_OAUTH2_CLIENTID from environment variable: ", clientIdEnvVar)
 		configuration.Authentication.OAuth2.ClientID = clientIdEnvVar
 	}
 
-	if clientSecretEnvVar := os.Getenv("Authentication:OAuth2:ClientSecret"); clientSecretEnvVar != "" {
-		log.Println("Overriding Authentication:OAuth2:ClientSecret from environment variable: ", clientSecretEnvVar)
+	if clientSecretEnvVar := os.Getenv("AUTHENTICATION_OAUTH2_CLIENTSECRET"); clientSecretEnvVar != "" {
+		log.Println("Overriding AUTHENTICATION_OAUTH2_CLIENTSECRET from environment variable: ", clientSecretEnvVar)
 		configuration.Authentication.OAuth2.ClientSecret = clientSecretEnvVar
 	}
 
-	if tweetsStorageConnectionStringEnvVar := os.Getenv("TweetsStorage:ConnectionString"); tweetsStorageConnectionStringEnvVar != "" {
-		log.Println("Overriding TweetsStorage:ConnectionString from environment variable: ", tweetsStorageConnectionStringEnvVar)
+	if tweetsStorageConnectionStringEnvVar := os.Getenv("TWEETSSTORAGE_CONNECTIONSTRING"); tweetsStorageConnectionStringEnvVar != "" {
+		log.Println("Overriding TWEETSSTORAGE_CONNECTIONSTRING from environment variable: ", tweetsStorageConnectionStringEnvVar)
 		configuration.TweetsStorage.ConnectionString = tweetsStorageConnectionStringEnvVar
 	}
 
-	if feedsStorageConnectionStringEnvVar := os.Getenv("FeedsStorage:ConnectionString"); feedsStorageConnectionStringEnvVar != "" {
-		log.Println("Overriding FeedsStorage:ConnectionString from environment variable: ", feedsStorageConnectionStringEnvVar)
+	if feedsStorageConnectionStringEnvVar := os.Getenv("FEEDSSTORAGE_CONNECTIONSTRING"); feedsStorageConnectionStringEnvVar != "" {
+		log.Println("Overriding FEEDSSTORAGE_CONNECTIONSTRING from environment variable: ", feedsStorageConnectionStringEnvVar)
 		configuration.FeedsStorage.ConnectionString = feedsStorageConnectionStringEnvVar
 	}
 
-	if apiServerApplicationUrlStringEnvVar := os.Getenv("ApiServer:ApplicationUrl"); apiServerApplicationUrlStringEnvVar != "" {
-		log.Println("Overriding ApiServer:ApplicationUrl from environment variable: ", apiServerApplicationUrlStringEnvVar)
+	if apiServerApplicationUrlStringEnvVar := os.Getenv("APISERVER_APPLICATIONURL"); apiServerApplicationUrlStringEnvVar != "" {
+		log.Println("Overriding APISERVER_APPLICATIONURL from environment variable: ", apiServerApplicationUrlStringEnvVar)
 		configuration.ApiServer.ApplicationUrl = apiServerApplicationUrlStringEnvVar
 	}
 
-	if natsUrlStringEnvVar := os.Getenv("NATSUrl"); natsUrlStringEnvVar != "" {
-		log.Println("Overriding NATSUrl from environment variable: ", natsUrlStringEnvVar)
+	if natsUrlStringEnvVar := os.Getenv("NATS_URL"); natsUrlStringEnvVar != "" {
+		log.Println("Overriding NATS_URL from environment variable: ", natsUrlStringEnvVar)
 		configuration.NATSUrl = natsUrlStringEnvVar
 	}
 

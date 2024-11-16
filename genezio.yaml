@@ -6,8 +6,8 @@ backend:
   language:
     name: go
   environment:
-    Mode: Persistent
-    Authentication:Enable: "false"
+    MODE: Persistent
+    AUTHENTICATION_ENABLE: "false"
 frontend:
   path: client
   sdk:

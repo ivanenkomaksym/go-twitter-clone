@@ -186,7 +186,7 @@ jobs:
             --platform managed \
             --region europe-central2 \
             --allow-unauthenticated \
-            --set-env-vars "Mode=Cloud,ProjectId=${{ secrets.PROJECT_ID }},Authentication:OAuth2:ClientID=${{ secrets.OAUTH2_CLIENT_ID }},Authentication:OAuth2:ClientSecret=${{ secrets.OAUTH2_CLIENT_SECRET }},ApiServer:ApplicationUrl=0.0.0.0:8080"
+            --set-env-vars "MODE=Cloud,PROJECT_ID=${{ secrets.PROJECT_ID }},AUTHENTICATION_OAUTH2_CLIENTID=${{ secrets.OAUTH2_CLIENT_ID }},AUTHENTICATION_OAUTH2_CLIENTSECRET=${{ secrets.OAUTH2_CLIENT_SECRET }},APISERVER_APPLICATIONURL=0.0.0.0:8080"
 
           # Deploy client image to Cloud Run
       - name: Deploy client to Cloud Run

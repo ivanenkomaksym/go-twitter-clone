@@ -38,8 +38,6 @@ This command launches the service along with its dependencies defined in the doc
 Values in `.env` are filled from GitHub secrets during GitHub action (see ci-cd.yml). To build docker images locally with different values you can create `.env.local` with needed values:
 
 ```
-CLIENT_IMAGE=ivanenkomak/twitter-clone-client:latest
-SERVER_IMAGE=ivanenkomak/twitter-clone-server:latest
 PROJECT_ID=${{ secrets.PROJECT_ID }}
 OAUTH2_CLIENT_ID=${{ secrets.OAUTH2_CLIENT_ID }}
 OAUTH2_CLIENT_SECRET=${{ secrets.OAUTH2_CLIENT_SECRET }}

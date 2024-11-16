@@ -21,15 +21,15 @@ services:
       # Map the JSON file from your local system to the container
       - ./secrets/service-account.json:/secrets/service-account.json:r
     environment:
-      - "Mode=${MODE}"
-      - "ProjectId=${PROJECT_ID}"
-      - "TweetsStorage:ConnectionString=myuser:mypassword@tcp(twitter-mysql:3306)"
-      - "FeedsStorage:ConnectionString=mongodb://twitter-mongo:27017"
-      - "NATSUrl=nats://twitter-nats:4222"
-      - "ApiServer:ApplicationUrl=0.0.0.0:8016"
-      - "Authentication:Enable=true"
-      - "Authentication:OAuth2:ClientID=${OAUTH2_CLIENT_ID}"
-      - "Authentication:OAuth2:ClientSecret=${OAUTH2_CLIENT_SECRET}"
+      - "MODE=${MODE}"
+      - "PROJECT_ID=${PROJECT_ID}"
+      - "TWEETSSTORAGE_CONNECTIONSTRING=myuser:mypassword@tcp(twitter-mysql:3306)"
+      - "FEEDSSTORAGE_CONNECTIONSTRING=mongodb://twitter-mongo:27017"
+      - "NATS_URL=nats://twitter-nats:4222"
+      - "APISERVER_APPLICATIONURL=0.0.0.0:8016"
+      - "AUTHENTICATION_ENABLE=true"
+      - "AUTHENTICATION_OAUTH2_CLIENTID=${OAUTH2_CLIENT_ID}"
+      - "AUTHENTICATION_OAUTH2_CLIENTSECRET=${OAUTH2_CLIENT_SECRET}"
       - "GOOGLE_SERVICE_ACCOUNT_KEY=${GOOGLE_SERVICE_ACCOUNT_KEY}"
       - "GOOGLE_APPLICATION_CREDENTIALS=/secrets/service-account.json"
     ports:
