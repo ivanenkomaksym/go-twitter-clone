@@ -157,3 +157,43 @@ jobs:
     - name: Push client image
       run: |
         docker buildx build -t "ivanenkomak/twitter-clone-client:latest" -f ./client/Dockerfile ./client --push
+
+    outputs:
+      server_image: ivanenkomak/twitter-clone-server:latest
+      client_image: ivanenkomak/twitter-clone-client:latest
+
+  deploy-to-cloud-run:
+    runs-on: ubuntu-latest
+    needs: push-images
+    steps:
+      # Authenticate with Google Cloud
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+
+      # Install Google Cloud SDK
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+
+      # Deploy to Cloud Run
+      - name: Deploy server to Cloud Run
+        run: |
+          gcloud run deploy twitter-clone-server \
+            --image ${{ needs.push-images.outputs.server_image  }} \
+            --platform managed \
+            --region europe-central2 \
+            --allow-unauthenticated \
+            --set-env-vars "Mode=Cloud,ProjectId=${{ secrets.PROJECT_ID }},Authentication:OAuth2:ClientID=${{ secrets.OAUTH2_CLIENT_ID }},Authentication:OAuth2:ClientSecret=${{ secrets.OAUTH2_CLIENT_SECRET }},ApiServer:ApplicationUrl=0.0.0.0:8080"
+
+          # Deploy client image to Cloud Run
+      - name: Deploy client to Cloud Run
+        run: |
+          gcloud run deploy twitter-clone-client \
+            --image ${{ needs.push-images.outputs.client_image }} \
+            --platform managed \
+            --region europe-central2 \
+            --allow-unauthenticated \
+            --set-env-vars "NODE_ENV=production"
