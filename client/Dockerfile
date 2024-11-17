@@ -4,9 +4,6 @@ WORKDIR /app
 
 COPY package*.json ./
 
-# Set NODE_ENV to production
-ENV NODE_ENV production
-
 RUN npm install
 
 # Create a temporary directory to hold the build context

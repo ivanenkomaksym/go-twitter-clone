@@ -26,8 +26,8 @@ services:
       - "TWEETSSTORAGE_CONNECTIONSTRING=myuser:mypassword@tcp(twitter-mysql:3306)"
       - "FEEDSSTORAGE_CONNECTIONSTRING=mongodb://twitter-mongo:27017"
       - "NATS_URL=nats://twitter-nats:4222"
-      - "APISERVER_APPLICATIONURL=0.0.0.0:8016"
-      - "AUTHENTICATION_ENABLE=true"
+      - "APISERVER_APPLICATIONURL=${APISERVER_APPLICATIONURL}"
+      - "AUTHENTICATION_ENABLE=${AUTHENTICATION_ENABLE}"
       - "AUTHENTICATION_OAUTH2_CLIENTID=${OAUTH2_CLIENT_ID}"
       - "AUTHENTICATION_OAUTH2_CLIENTSECRET=${OAUTH2_CLIENT_SECRET}"
       - "AUTHENTICATION_OAUTH2_REDIRECT_URI=${OAUTH2_REDIRECT_URI}"
@@ -56,6 +56,8 @@ services:
       context: ./client
       dockerfile: Dockerfile
     container_name: twitter-clone-client
+    environment:
+      - "NODE_ENV=${NODE_ENV}"
     ports:
       - 3000:3000
 
