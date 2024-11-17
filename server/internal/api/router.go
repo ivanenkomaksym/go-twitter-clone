@@ -36,6 +36,7 @@ func StartRouter(configuration config.Configuration,
 	oauth2Router := authn.OAuth2Router{
 		Authentication:          configuration.Authentication,
 		RedirectURI:             configuration.RedirectURI,
+		Domain:                  configuration.AllowOrigin,
 		AuthenticationValidator: authenticationValidator,
 	}
 

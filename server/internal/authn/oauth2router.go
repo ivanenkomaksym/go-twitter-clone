@@ -17,6 +17,7 @@ import (
 type OAuth2Router struct {
 	Authentication          config.Authentication
 	RedirectURI             string
+	Domain                  string
 	AuthenticationValidator IAuthenticationValidator
 }
 
@@ -57,9 +58,10 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 		Name:     "id_token",
 		Value:    data.IdToken,
 		Path:     "/",
-		HttpOnly: true,                 // Prevent JavaScript access
-		Secure:   true,                 // Ensure it's sent only over HTTPS
-		SameSite: http.SameSiteLaxMode, // Helps mitigate CSRF
+		HttpOnly: true, // Prevent JavaScript access
+		Secure:   true, // Ensure it's sent only over HTTPS
+		SameSite: http.SameSiteNoneMode,
+		Domain:   router.Domain,
 	})
 
 	// Redirect to the frontend or some protected page
