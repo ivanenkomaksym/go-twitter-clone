@@ -10,7 +10,7 @@ env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  MODE: Cloud
+  MODE: Persistent
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
   OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET}}
@@ -99,7 +99,7 @@ jobs:
       run: mkdir -p ./secrets
 
     - name: Copy service account JSON
-      run: echo "${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}" > ./secrets/service-account.json
+      run: echo "${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}" > ./secrets/service-account.json
 
     - name: Cache Docker layers
       uses: actions/cache@v3
@@ -112,14 +112,6 @@ jobs:
     - name: Run docker-compose
       run: |
         docker compose -f ./compose.yaml up -d --build
-      env:
-        MODE: Persistent
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
-        OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
-        OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET }}
-        OAUTH2_REDIRECT_URI: http://localhost:8016/auth/google/callback
-        REDIRECT_URI: http://localhost:3000/callback
-        ALLOW_ORIGIN: http://localhost:3000/
 
     - name: Install Node.js
       uses: actions/setup-node@v3
@@ -133,7 +125,7 @@ jobs:
 
     - name: Run e2e tests
       env:
-        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}
+        GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
       run: |
         cd e2e_tests
         npm test
