@@ -13,6 +13,7 @@ describe('E2E Tweet API Tests', () => {
     before(async () => {
         // Generate JWT and fetch access token
         const jwtToken = createJWT();
+        console.log(jwtToken);
 
         try {
             const response = await axios.post('https://oauth2.googleapis.com/token', null, {
@@ -106,6 +107,7 @@ describe('E2E Tweet API Tests', () => {
 
             expect(response.status).to.equal(200);
             expect(response.data.feeds).to.be.an('array');
+            console.log("All feeds: ", response.data.feeds);
 
             const golangfeedExists = response.data.feeds.some(feed => feed.name === golangtag);
             expect(golangfeedExists).to.be.true;
@@ -131,6 +133,7 @@ describe('E2E Tweet API Tests', () => {
             expect(response.status).to.equal(200);
             expect(response.data).to.have.property('name', golangtag);
             expect(response.data).to.have.property('tweets').that.is.an('array');
+            console.log("Feed " + golangtag + " tweets: ", response.data.tweets);
 
             // Confirm that the specific tweet exists within the feed's tweets
             const tweetExistsInFeed = response.data.tweets.some(tweet => tweet.id === createdTweetId);

@@ -10,7 +10,7 @@ env:
   DOCKER_USER: ${{ secrets.DOCKER_USER }}
   DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
-  MODE: Persistent
+  MODE: Cloud
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
   OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET}}
@@ -18,7 +18,7 @@ env:
   GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY}}
   GOOGLE_APPLICATION_CREDENTIALS: /secrets/service-account.json
   REDIRECT_URI: https://twitter-clone-client-120740449329.europe-central2.run.app/callback
-  ALLOW_ORIGIN: https://twitter-clone-client-120740449329.europe-central2.run.app/
+  ALLOW_ORIGIN: https://twitter-clone-client-120740449329.europe-central2.run.app
   APISERVER_APPLICATIONURL: 0.0.0.0:8080
 
 jobs:
@@ -112,6 +112,9 @@ jobs:
     - name: Run docker-compose
       run: |
         docker compose -f ./compose.yaml up -d --build
+      env:
+        MODE: Persistent
+        APISERVER_APPLICATIONURL: 0.0.0.0:8016
 
     - name: Install Node.js
       uses: actions/setup-node@v3
@@ -172,7 +175,7 @@ jobs:
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ env.GOOGLE_APPLICATION_CREDENTIALS }}
+          credentials_json: ${{ env.GOOGLE_SERVICE_ACCOUNT_KEY }}
 
       # Install Google Cloud SDK
       - name: Set up Google Cloud SDK

@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 
 // Load the service account key from environment variables
 const serviceAccountKey = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_KEY);
+console.log("serviceAccountKey: ", serviceAccountKey);
 
 // Extract the necessary values from the service account key JSON
 const clientEmail = serviceAccountKey.client_email;
