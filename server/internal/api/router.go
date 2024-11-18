@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 	"twitter-clone/internal/authn"
 	"twitter-clone/internal/config"
@@ -33,10 +34,12 @@ func StartRouter(configuration config.Configuration,
 		panic(err)
 	}
 
+	normalizedDomain := strings.TrimPrefix(strings.TrimPrefix(configuration.AllowOrigin, "http://"), "https://")
+
 	oauth2Router := authn.OAuth2Router{
 		Authentication:          configuration.Authentication,
 		RedirectURI:             configuration.RedirectURI,
-		Domain:                  configuration.AllowOrigin,
+		Domain:                  normalizedDomain,
 		AuthenticationValidator: authenticationValidator,
 	}
 

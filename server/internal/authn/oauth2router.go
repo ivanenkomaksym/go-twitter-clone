@@ -64,6 +64,8 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 		Domain:   router.Domain,
 	})
 
+	fmt.Printf("Set-Cookie: %s\n", w.Header().Get("Set-Cookie"))
+
 	// Redirect to the frontend or some protected page
 	http.Redirect(w, r, router.RedirectURI, http.StatusFound)
 
