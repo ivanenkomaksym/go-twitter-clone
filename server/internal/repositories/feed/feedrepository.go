@@ -8,4 +8,5 @@ type FeedRepository interface {
 	GetFeedByName(name string) (*models.Feed, error)
 	AppendTweet(tweet models.Tweet) error
 	DeleteFeed(name string) bool
+	DeleteTweet(deletedTweet models.Tweet) bool
 }

@@ -147,3 +147,63 @@ func (r *FirestoreFeedRepository) DeleteFeed(name string) bool {
 	_, err := r.client.Collection("feeds").Doc(name).Delete(context.Background())
 	return err == nil
 }
+
+func (r *FirestoreFeedRepository) DeleteTweet(deletedTweet models.Tweet) bool {
+	ctx := context.Background()
+
+	// If there are no tags, there's no feed to delete the tweet from.
+	if len(deletedTweet.Tags) == 0 {
+		return false
+	}
+
+	// Loop over each tag and update the corresponding feed document.
+	for _, tag := range deletedTweet.Tags {
+		feedDocRef := r.client.Collection("feeds").Doc(tag)
+
+		// Run a Firestore transaction to safely check and delete the tweet.
+		err := r.client.RunTransaction(ctx, func(ctx context.Context, tx *firestore.Transaction) error {
+			// Check if the feed document exists.
+			doc, err := tx.Get(feedDocRef)
+			if err != nil {
+				if status.Code(err) == codes.NotFound {
+					// Document does not exist, so we don't need to delete anything.
+					return nil
+				} else {
+					return err // Return any other error.
+				}
+			}
+
+			var feedData struct {
+				Tweets []models.Tweet `firestore:"tweets"`
+			}
+
+			err = doc.DataTo(&feedData)
+			if err != nil {
+				return err
+			}
+
+			// Filter out the deleted tweet from the tweets array.
+			var updatedTweets []models.Tweet
+			for _, t := range feedData.Tweets {
+				if t.ID != deletedTweet.ID {
+					updatedTweets = append(updatedTweets, t)
+				}
+			}
+
+			// Update the tweets array with the filtered tweets.
+			err = tx.Update(feedDocRef, []firestore.Update{
+				{
+					Path:  "tweets",
+					Value: updatedTweets,
+				},
+			})
+			return err
+		})
+
+		if err != nil {
+			return false // Return if there's an error in any transaction.
+		}
+	}
+
+	return true
+}

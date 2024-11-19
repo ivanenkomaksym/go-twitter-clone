@@ -163,3 +163,27 @@ func (repo *PersistentFeedRepository) DeleteFeed(name string) bool {
 
 	return deleteResult.DeletedCount > 0
 }
+
+func (repo *PersistentFeedRepository) DeleteTweet(deletedTweet models.Tweet) bool {
+	filter := bson.M{
+		"_id": bson.M{
+			"$in": deletedTweet.Tags,
+		},
+	}
+
+	update := bson.M{
+		"$pull": bson.M{
+			"tweets": bson.M{
+				"id": deletedTweet.ID,
+			},
+		},
+	}
+
+	_, err := repo.feedsCollection.UpdateMany(context.Background(), filter, update)
+	if err != nil {
+		log.Printf("Error deleting tweet: %v", err)
+		return false
+	}
+
+	return true
+}

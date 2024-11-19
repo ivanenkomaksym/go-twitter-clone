@@ -68,3 +68,21 @@ func (repo *InMemoryFeedRepository) DeleteFeed(name string) bool {
 
 	return removed
 }
+
+func (repo *InMemoryFeedRepository) DeleteTweet(deletedTweet models.Tweet) bool {
+	removed := false
+	for _, tag := range deletedTweet.Tags {
+		feed, err := repo.GetFeedByName(tag)
+		if err != nil {
+			for j, tweet := range feed.Tweets {
+				if tweet.ID == deletedTweet.ID {
+					feed.Tweets = append(feed.Tweets[:j], feed.Tweets[j+1:]...)
+					removed = true
+					break
+				}
+			}
+		}
+	}
+
+	return removed
+}
