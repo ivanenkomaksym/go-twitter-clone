@@ -48,13 +48,24 @@ func (n *NATSMessageHandler) SetupMessageRouter(
 	}
 
 	router.AddHandler(
-		HandlerName,
+		UpdateFeedsOnNewTweetCreated,
 		TweetCreatedTopic,
 		sub,
 		FeedUpdatedTopic,
 		pub,
 		func(msg *message.Message) (messages []*message.Message, err error) {
 			return TweetCreatedHandler(msg, feedRepo, logger)
+		},
+	)
+
+	router.AddHandler(
+		UpdateFeedsOnTweetDeleted,
+		TweetDeletedTopic,
+		sub,
+		FeedUpdatedTopic,
+		pub,
+		func(msg *message.Message) (messages []*message.Message, err error) {
+			return TweetDeletedHandler(msg, feedRepo, logger)
 		},
 	)
 

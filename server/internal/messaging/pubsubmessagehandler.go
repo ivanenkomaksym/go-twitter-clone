@@ -57,13 +57,24 @@ func (n *PubSubMessageHandler) SetupMessageRouter(
 
 	// Add handler to process incoming messages
 	router.AddHandler(
-		HandlerName,
+		UpdateFeedsOnNewTweetCreated,
 		TweetCreatedTopic,
 		routerSub,
 		FeedUpdatedTopic,
 		pub,
 		func(msg *message.Message) (messages []*message.Message, err error) {
 			return TweetCreatedHandler(msg, feedRepo, logger)
+		},
+	)
+
+	router.AddHandler(
+		UpdateFeedsOnTweetDeleted,
+		TweetDeletedTopic,
+		routerSub,
+		FeedUpdatedTopic,
+		pub,
+		func(msg *message.Message) (messages []*message.Message, err error) {
+			return TweetDeletedHandler(msg, feedRepo, logger)
 		},
 	)
 

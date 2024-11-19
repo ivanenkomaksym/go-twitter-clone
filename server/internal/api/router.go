@@ -194,10 +194,29 @@ func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tweetId := chi.URLParam(r, "tweetId")
+	tweetToDelete := router.TweetRepo.GetTweetById(tweetId)
+	if tweetToDelete == nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	var deleted = router.TweetRepo.DeleteTweet(tweetId)
 
 	if !deleted {
 		w.WriteHeader(http.StatusNotFound)
+		return
+	} else {
+
+		event := messaging.TweetDeleted{
+			DeletedTweet: *tweetToDelete,
+			OccurredAt:   time.Now().UTC(),
+		}
+
+		err := router.Publisher.Publish(messaging.TweetCreatedTopic, event)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 	}
 
 	w.WriteHeader(204)

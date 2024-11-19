@@ -49,6 +49,34 @@ func TweetCreatedHandler(
 	return CreateFeedUpdatedEvents(event.Tweet.Tags)
 }
 
+func TweetDeletedHandler(
+	msg *message.Message,
+	feedRepo repositories.FeedRepository,
+	logger watermill.LoggerAdapter,
+) (messages []*message.Message, err error) {
+
+	defer func() {
+		if err == nil {
+			logger.Info("Successfully updated feeds on tweet deleted", nil)
+		} else {
+			logger.Error("Error while updating feeds on tweet deleted", err, nil)
+		}
+	}()
+
+	event := TweetDeleted{}
+	err = json.Unmarshal(msg.Payload, &event)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Info("Deleting tweet", watermill.LogFields{"post": event.DeletedTweet})
+
+	feedRepo.DeleteTweet(event.DeletedTweet)
+	// TODO: handle error
+
+	return CreateFeedUpdatedEvents(event.DeletedTweet.Tags)
+}
+
 func CreateFeedUpdatedEvents(tags []string) ([]*message.Message, error) {
 	var messages []*message.Message
 
