@@ -212,7 +212,8 @@ func (router Router) DeleteTweet(w http.ResponseWriter, r *http.Request) {
 			OccurredAt:   time.Now().UTC(),
 		}
 
-		err := router.Publisher.Publish(messaging.TweetCreatedTopic, event)
+		router.Logger.Info("Publishing tweet deleted event", watermill.LogFields{"event": event})
+		err := router.Publisher.Publish(messaging.TweetDeletedTopic, event)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return

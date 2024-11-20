@@ -165,6 +165,8 @@ func (repo *PersistentFeedRepository) DeleteFeed(name string) bool {
 }
 
 func (repo *PersistentFeedRepository) DeleteTweet(deletedTweet models.Tweet) bool {
+	log.Printf("Deleting tweet: %v", deletedTweet)
+
 	filter := bson.M{
 		"_id": bson.M{
 			"$in": deletedTweet.Tags,

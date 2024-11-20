@@ -99,14 +99,7 @@ func TestAppendTweet(t *testing.T) {
 	feedName := "TechNews"
 	feedRepo.CreateFeed(feedName)
 
-	expectedTweet := models.Tweet{
-		ID:        "abc",
-		Title:     "title",
-		Content:   "content",
-		Tags:      []string{"TechNews"},
-		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
-		User:      models.User{FirstName: "Alice", LastName: "Liddel", Email: "alice@gmail.com", Picture: "picture.png"},
-	}
+	expectedTweet := createTweet()
 
 	err := feedRepo.AppendTweet(expectedTweet)
 
@@ -131,4 +124,33 @@ func TestAppendTweet(t *testing.T) {
 
 	deleted := feedRepo.DeleteFeed(feedName)
 	assert.True(t, deleted, "DeleteFeed should return true for successful deletion")
+}
+
+func TestDeleteTweet(t *testing.T) {
+	feedRepo := setupFeedRepo()
+
+	feedName := "TechNews"
+	feedRepo.CreateFeed(feedName)
+
+	expectedTweet := createTweet()
+
+	err := feedRepo.AppendTweet(expectedTweet)
+
+	// Assert that the tweet is appended without errors
+	assert.NoError(t, err, "Tweet should be appended without errors")
+
+	deleted := feedRepo.DeleteTweet(expectedTweet)
+	assert.True(t, deleted, "DeleteTweet should return true for successful deletion")
+}
+
+func createTweet() models.Tweet {
+	expectedTweet := models.Tweet{
+		ID:        "abc",
+		Title:     "title",
+		Content:   "content",
+		Tags:      []string{"TechNews"},
+		CreatedAt: models.MySQLTimestamp{Time: time.Now()},
+		User:      models.User{FirstName: "Alice", LastName: "Liddel", Email: "alice@gmail.com", Picture: "picture.png"},
+	}
+	return expectedTweet
 }
