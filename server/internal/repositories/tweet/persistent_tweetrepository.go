@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
 
@@ -96,7 +97,8 @@ func (repo *PersistentTweetRepository) init(configuration config.Configuration) 
 		content TEXT,
 		created_at TIMESTAMP,
 		user_id VARCHAR(36),
-		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    	tags TEXT
 	)`
 
 	_, err = repo.db.Exec(createTweetsTableSQL)
@@ -141,9 +143,9 @@ func (repo *PersistentTweetRepository) CreateTweet(createTweetRequest models.Cre
 
 	// Insert the tweet with a reference to the user_id
 	_, err = repo.db.Exec(`
-		INSERT INTO tweets (id, title, content, created_at, user_id) 
-		VALUES (?, ?, ?, ?, ?)
-	`, tweet.ID, tweet.Title, tweet.Content, tweet.CreatedAt.Time, userID)
+	INSERT INTO tweets (id, title, content, created_at, user_id, tags) 
+		VALUES (?, ?, ?, ?, ?, ?)
+	`, tweet.ID, tweet.Title, tweet.Content, tweet.CreatedAt.Time, userID, strings.Join(tweet.Tags, ","))
 	if err != nil {
 		log.Printf("Error inserting tweet into database: %v", err)
 		return nil
@@ -157,7 +159,8 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 	// Query to fetch tweets along with user details
 	rows, err := repo.db.Query(`
 		SELECT t.id, t.title, t.content, t.created_at, 
-		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture
+		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture,
+			   t.tags
 		FROM tweets t
 		JOIN users u ON t.user_id = u.id
 	`)
@@ -172,6 +175,7 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 		var tweet models.Tweet
 		var user models.User
 		var userID string
+		var tags sql.NullString
 
 		// Scan the values from the row into the tweet and user structs
 		err := rows.Scan(
@@ -184,6 +188,7 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 			&user.LastName,
 			&user.Email,
 			&user.Picture,
+			&tags,
 		)
 		if err != nil {
 			log.Printf("Error scanning tweet row: %v", err)
@@ -192,6 +197,11 @@ func (repo *PersistentTweetRepository) GetTweets() []models.Tweet {
 
 		// Set the user struct in the tweet and add to the tweets slice
 		tweet.User = user
+		if tags.Valid {
+			tweet.Tags = strings.Split(tags.String, ",") // Split tags into an array
+		} else {
+			tweet.Tags = []string{}
+		}
 		tweets = append(tweets, tweet)
 	}
 
@@ -207,7 +217,8 @@ func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
 	// Query to fetch a single tweet along with user details by tweet ID
 	row := repo.db.QueryRow(`
 		SELECT t.id, t.title, t.content, t.created_at, 
-		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture
+		       u.id AS user_id, u.first_name, u.last_name, u.email, u.picture,
+			   t.tags
 		FROM tweets t
 		JOIN users u ON t.user_id = u.id
 		WHERE t.id = ?
@@ -216,6 +227,7 @@ func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
 	var tweet models.Tweet
 	var user models.User
 	var userID string
+	var tags sql.NullString
 
 	// Scan the result into the tweet and user structs
 	err := row.Scan(
@@ -228,6 +240,7 @@ func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
 		&user.LastName,
 		&user.Email,
 		&user.Picture,
+		&tags,
 	)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -239,6 +252,11 @@ func (repo *PersistentTweetRepository) GetTweetById(id string) *models.Tweet {
 
 	// Set the user struct in the tweet
 	tweet.User = user
+	if tags.Valid {
+		tweet.Tags = strings.Split(tags.String, ",") // Split tags into an array
+	} else {
+		tweet.Tags = []string{}
+	}
 
 	return &tweet
 }
