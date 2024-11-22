@@ -54,10 +54,12 @@ services:
     pull_policy: always
     build:
       context: ./client
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile    
+      args:
+        REACT_APP_CLIENT_APPLICATIONURL: ${REACT_APP_CLIENT_APPLICATIONURL}
     container_name: twitter-clone-client
     environment:
-      - "NODE_ENV=${NODE_ENV}"
+      - "REACT_APP_CLIENT_APPLICATIONURL=${REACT_APP_CLIENT_APPLICATIONURL}"
     ports:
       - 3000:3000
 
@@ -76,18 +78,30 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      placement:
+        constraints:
+          - node.labels.mode == Persistent
 
   mongo:
     image: mongo
     container_name: twitter-mongo
     ports:
       - 27017:27017
+    deploy:
+      placement:
+        constraints:
+          - node.labels.mode == Persistent
 
   nats:
     image: nats-streaming
     container_name: twitter-nats
     ports:
       - 4222:4222
+    deploy:
+      placement:
+        constraints:
+          - node.labels.mode == Persistent
 
 # The commented out section below is an example of how to define a PostgreSQL
 # database that your application can use. `depends_on` tells Docker Compose to

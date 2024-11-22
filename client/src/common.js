@@ -1,6 +1,9 @@
 console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('REACT_APP_CLIENT_APPLICATIONURL:', process.env.REACT_APP_CLIENT_APPLICATIONURL);
 const environment = process.env.NODE_ENV || 'development'; // Default to development if NODE_ENV is not set
-const config = require('./env.json')[environment];
+const config = {
+    applicationUri: process.env.REACT_APP_CLIENT_APPLICATIONURL  || require('./env.json')[environment].applicationUri
+};
 
 console.log('Current Environment:', environment);
 console.log('Configuration:', config);

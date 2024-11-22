@@ -6,6 +6,12 @@ COPY package*.json ./
 
 RUN npm install
 
+ARG REACT_APP_CLIENT_APPLICATIONURL
+ENV REACT_APP_CLIENT_APPLICATIONURL=$REACT_APP_CLIENT_APPLICATIONURL
+
+# Ensure the build arguments are baked into your React app
+RUN echo "REACT_APP_CLIENT_APPLICATIONURL=$REACT_APP_CLIENT_APPLICATIONURL"
+
 # Create a temporary directory to hold the build context
 RUN mkdir /tmp/context
 
