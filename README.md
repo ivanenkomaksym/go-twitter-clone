@@ -25,28 +25,34 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 ## Settings
 Application settings can be configured in `internal/config/appsettings.json` file. Possible configurations include mode of the application, API server configuration, Tweets and Feeds database connections, NATS messaging connection.
 
-# Run in a Docker Container
+# Multi-Environment Configuration for Deployment
 
-To run the service using Docker Compose, use the following command:
+This project supports multiple deployment environments: in-memory, persistent, and cloud using Docker Compose. CI/CD workflow supports cloud deployment environment by default.
 
-```
-docker-compose up
-```
+![Alt text](docs/envs.png?raw=true "Multi-Environment Configuration")
 
-This command launches the service along with its dependencies defined in the docker-compose.yml file.
+This setup provides a robust and flexible way to handle multiple environments while ensuring security and consistency across development and production workflows.
 
-Values in `.env` are filled from GitHub secrets during GitHub action (see ci-cd.yml). To build docker images locally with different values you can create `.env.local` with needed values:
+Below is a detailed explanation of the setup:
 
-```
-PROJECT_ID=${{ secrets.PROJECT_ID }}
-OAUTH2_CLIENT_ID=${{ secrets.OAUTH2_CLIENT_ID }}
-OAUTH2_CLIENT_SECRET=${{ secrets.OAUTH2_CLIENT_SECRET }}
-```
+## Environment-Specific Configuration Files
+Environment variables are managed using `.env` files tailored for each deployment mode:
+- **`.env`**: Default environment for in-memory mode, suitable for local development.
+- **`.env.local`**: Persistent mode, configured for local development with a database and messaging connections.
+- **`.env.cloud`**: Cloud mode, used for deployment in cloud environment.
 
-And then run 
-```
+## Docker Compose Setup
+The `compose.yaml` references several environment variables that can be dynamically loaded from the specified `.env` file using the `--env-file` option.
+
+Example command:
+```bash
 docker-compose --env-file .env.local -f compose.yaml up -d --build
 ```
+
+## CI/CD Pipeline Integration
+The `ci-cd.yml` file integrates the configuration into a CI/CD workflow, using secrets stored securely in a GitHub Actions. Environment-specific secrets are injected during pipeline execution:
+- `DOCKER_USER` and `DOCKER_PASSWORD` for Docker image management.
+- `PROJECT_ID`, `OAUTH2_CLIENT_ID`, `OAUTH2_CLIENT_SECRET` `GOOGLE_SERVICE_ACCOUNT_KEY` for cloud configuration.
 
 # Testing
 
@@ -195,3 +201,7 @@ src/
 [Google OAuth 2.0 and Golang](https://medium.com/@_RR/google-oauth-2-0-and-golang-4cc299f8c1ed)
 
 [Using OAuth 2.0 for Server to Server Applications](https://developers.google.com/identity/protocols/oauth2/service-account#httprest)
+
+[Set up a global external Application Load Balancer with Cloud Run, App Engine, or Cloud Run functions](https://cloud.google.com/load-balancing/docs/https/setup-global-ext-https-serverless)
+
+[Tutorial: Set up a domain by using Cloud DNS](https://cloud.google.com/dns/docs/tutorials/create-domain-tutorial#set-up-domain)
