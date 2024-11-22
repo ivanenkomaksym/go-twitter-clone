@@ -194,4 +194,28 @@ describe('E2E Tweet API Tests', () => {
             expect(error.response.status).to.equal(404);
         }
     });
+
+    it('should verify tweet deletion from feed', async () => {
+        const url = `${baseurl}/feeds/${golangtag}`;
+
+        try {
+            const response = await axios.get(url, {
+                headers: {
+                    Authorization: `${accessToken}`
+                }
+            });
+
+            expect(response.status).to.equal(200);
+            expect(response.data).to.have.property('name', golangtag);
+            expect(response.data).to.have.property('tweets').that.is.an('array');
+            console.log("Feed " + golangtag + " tweets: ", response.data.tweets);
+
+            // Confirm that the specific tweet does not exist within the feed's tweets
+            const tweetExistsInFeed = response.data.tweets.some(tweet => tweet.id === createdTweetId);
+            expect(tweetExistsInFeed).to.be.false;
+        } catch (error) {
+            console.error("Error verifying tweet deletion from feed: ", error.response ? error.response.data : error.message);
+            throw error;
+        }
+    });
 });
