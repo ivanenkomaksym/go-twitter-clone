@@ -1,20 +1,22 @@
 # Twitter clone in GO
 
-Simple twitter clone with React frontend, Go backend and Server-Sent Events to support real-time refreshing. This example is based on [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events)
+Simple twitter clone with React frontend, Go backend and Server-Sent Events to support real-time refreshing. This example is based on [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events). Supports multi-environment setup, containerization, CI/CD, cloud deployment.
 
 ![Alt text](docs/screen.gif?raw=true)
 
 ## Features
 
 * Implements common messaging patterns such as publish-subscribe, request-reply, and event-driven architecture in Go.
+* Complete CI/CD pipeline: builds both backend and frontend services, runs unit and database integration tests, executes end-to-end tests in a full-scale environment, and deploys to Google Cloud Run.
+* Support FireStore and Pub/Sub in Cloud setup.
+* Hosted on Google Cloud DNS.
 * Utilizes popular database and  message broker technologies, including MySQL, Mongo and NATS.
 * Using appsettings in Go applications.
 * Includes Dockerfiles and Docker Compose configuration for containerizing the sample microservices.
-* Supports basic Google OAuth2
-* Runs database integration tests during CI using github workflow actions
-* Runs end-to-end tests on full scale environment during CI using github workflow actions
-* Includes common project structure for frontend projects
-* Runs frontend unit tests
+* Supports basic Google OAuth2.
+* Runs database integration tests during CI using github workflow actions.
+* Includes common project structure for frontend projects.
+* Runs frontend unit tests.
 
 ![Alt text](docs/architecture.png?raw=true "Application architecture")
 
