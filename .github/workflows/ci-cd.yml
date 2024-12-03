@@ -14,11 +14,11 @@ env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   OAUTH2_CLIENT_ID: ${{ secrets.OAUTH2_CLIENT_ID }}
   OAUTH2_CLIENT_SECRET: ${{ secrets.OAUTH2_CLIENT_SECRET}}
-  OAUTH2_REDIRECT_URI: https://ivanenkomak.com/auth/google/callback
+  OAUTH2_REDIRECT_URI: https://twitter-clone-server-120740449329.europe-central2.run.app/auth/google/callback
   GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY}}
   GOOGLE_APPLICATION_CREDENTIALS: /secrets/service-account.json
-  REDIRECT_URI: https://ivanenkomak.com/callback
-  ALLOW_ORIGIN: https://ivanenkomak.com
+  REDIRECT_URI: https://twitter-clone-server-120740449329.europe-central2.run.app/callback
+  ALLOW_ORIGIN: https://twitter-clone-server-120740449329.europe-central2.run.app
   APISERVER_APPLICATIONURL: 0.0.0.0:8080
 
 jobs:
