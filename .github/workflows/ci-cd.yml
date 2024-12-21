@@ -17,8 +17,8 @@ env:
   OAUTH2_REDIRECT_URI: https://twitter-clone-server-120740449329.europe-central2.run.app/auth/google/callback
   GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY}}
   GOOGLE_APPLICATION_CREDENTIALS: /secrets/service-account.json
-  REDIRECT_URI: https://go-twitter-clone.vercel.app/callback
-  ALLOW_ORIGIN: https://go-twitter-clone.vercel.app
+  REDIRECT_URI: https://twitter.ivanenkomak.com/callback
+  ALLOW_ORIGIN: https://twitter.ivanenkomak.com/
   APISERVER_APPLICATIONURL: 0.0.0.0:8080
 
 jobs:
