@@ -1,0 +1,10 @@
+/*
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Credentials: true
+  Content-Security-Policy: default-src 'self';
+
+/*.jpg
+  ! Content-Security-Policy
+  
+https://:project.pages.dev/*
+  Access-Control-Allow-Origin: https://staging.:project.pages.dev/
