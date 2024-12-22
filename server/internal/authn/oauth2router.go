@@ -17,8 +17,14 @@ import (
 type OAuth2Router struct {
 	Authentication          config.Authentication
 	RedirectURI             string
+	AllowOrigin             string
 	Domain                  string
 	AuthenticationValidator IAuthenticationValidator
+}
+
+func enableCors(w *http.ResponseWriter, allowOrigin string) {
+	(*w).Header().Set("Access-Control-Allow-Origin", allowOrigin)
+	(*w).Header().Set("Access-Control-Allow-Credentials", "true")
 }
 
 type AuthenticationResult struct {
@@ -27,6 +33,8 @@ type AuthenticationResult struct {
 }
 
 func (router OAuth2Router) OauthGoogleLogin(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w, router.AllowOrigin)
+
 	oauthState := router.generateStateOauthCookie(w)
 	u := router.Authentication.OAuth2.AuthCodeURL(oauthState, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
 	http.Redirect(w, r, u, http.StatusTemporaryRedirect)
@@ -45,6 +53,8 @@ func (router OAuth2Router) OauthGoogleLogout(w http.ResponseWriter, r *http.Requ
 }
 
 func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w, router.AllowOrigin)
+
 	data, err := router.getUserDataFromGoogle(r.FormValue("code"))
 	if err != nil {
 		log.Println(err.Error())
@@ -73,6 +83,8 @@ func (router OAuth2Router) OauthGoogleCallback(w http.ResponseWriter, r *http.Re
 }
 
 func (router OAuth2Router) OauthUserInfo(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w, router.AllowOrigin)
+
 	user := router.AuthenticationValidator.ValidateAuthentication(w, r)
 	if user == nil {
 		return
