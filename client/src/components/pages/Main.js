@@ -107,29 +107,27 @@ function Main() {
 
     return (
         <div className="container">
-            {isAuthenticated ? (
-                <>
-                    <div className="main-panel">
-
+            <div className="main-panel">
+                {isAuthenticated ? (
+                    <>
                         <InputForm
                             user={user}
                             formData={formData}
                             handleInputChange={handleInputChange}
                             handleAddTweet={handleAddTweet}
                         />
-
-                        {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} handleTagClick={handleTagClick} />}
+                    </>
+                ) : (
+                    <div className="welcomeMessage">
+                        <Link to="/account/login">Login</Link> to post tweets.
                     </div>
+                )}
+                {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} handleTagClick={handleTagClick} />}
+            </div>
 
-                    <div>
-                        <TagList tags={tags} handleTagClick={handleTagClick} />
-                    </div>
-                </>
-            ) : (
-                <div className="welcomeMessage">
-                    Welcome. <Link to="/account/login">Login</Link> to continue.
-                </div>
-            )}
+            <div>
+                <TagList tags={tags} handleTagClick={handleTagClick} />
+            </div>
         </div>
     );
 }
