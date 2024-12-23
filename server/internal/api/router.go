@@ -98,23 +98,19 @@ func (router Router) Mux() *chi.Mux {
 	}
 
 	tweetStream := TweetStreamAdapter{
-		repo:                    router.TweetRepo,
-		authenticationValidator: router.AuthenticationValidator,
-		logger:                  router.Logger,
+		repo:   router.TweetRepo,
+		logger: router.Logger,
 	}
 	feedStream := FeedStreamAdapter{
-		repo:                    router.FeedRepo,
-		authenticationValidator: router.AuthenticationValidator,
-		logger:                  router.Logger,
+		repo:   router.FeedRepo,
+		logger: router.Logger,
 	}
 	allTweetsStream := AllTweetsStreamAdapter{
-		repo:                    router.TweetRepo,
-		authenticationValidator: router.AuthenticationValidator,
+		repo: router.TweetRepo,
 	}
 	allFeedsStream := AllFeedsStreamAdapter{
-		repo:                    router.FeedRepo,
-		authenticationValidator: router.AuthenticationValidator,
-		logger:                  router.Logger,
+		repo:   router.FeedRepo,
+		logger: router.Logger,
 	}
 
 	tweetHandler := sseRouter.AddHandler(messaging.TweetCreatedTopic, tweetStream)
@@ -122,14 +118,12 @@ func (router Router) Mux() *chi.Mux {
 	allTweetsHandler := sseRouter.AddHandler(messaging.TweetUpdatedTopic, allTweetsStream)
 	allFeedsHandler := sseRouter.AddHandler(messaging.FeedUpdatedTopic, allFeedsStream)
 
-	if router.Config.Authentication.Enable {
-		r.Route("/", func(r chi.Router) {
-			r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
-			r.Get("/auth/google/logout", router.OAuth2Router.OauthGoogleLogout)
-			r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
-			r.Get("/auth/google/userinfo", router.OAuth2Router.OauthUserInfo)
-		})
-	}
+	r.Route("/", func(r chi.Router) {
+		r.Get("/auth/google/login", router.OAuth2Router.OauthGoogleLogin)
+		r.Get("/auth/google/logout", router.OAuth2Router.OauthGoogleLogout)
+		r.Get("/auth/google/callback", router.OAuth2Router.OauthGoogleCallback)
+		r.Get("/auth/google/userinfo", router.OAuth2Router.OauthUserInfo)
+	})
 
 	r.Route("/api", func(r chi.Router) {
 		r.Post("/tweets", router.CreateTweet)
