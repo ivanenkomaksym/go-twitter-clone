@@ -22,17 +22,39 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 		return &models.User{IsAnonymous: true}
 	}
 
-	access_token := r.Header.Get("Authorization")
-	if access_token != "" {
-		url := fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=%s", access_token)
-		_, err := http.Get(url)
+	id_token := r.Header.Get("Authorization")
+	if len(id_token) > 7 && id_token[:7] == "Bearer " {
+		id_token = id_token[7:]
+	}
+	if id_token != "" {
+		url := fmt.Sprintf("https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=%s", id_token)
+		resp, err := http.Get(url)
 		if err != nil {
-			http.Error(w, "Failed to validate access_token", http.StatusUnauthorized)
+			http.Error(w, "Failed to validate id_token", http.StatusUnauthorized)
+			return nil
+		}
+		defer resp.Body.Close()
+
+		// Read the response body
+		body, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			http.Error(w, "Failed to read response from Google", http.StatusUnauthorized)
+			return nil
+		}
+
+		// Parse the response body (which contains user info)
+		var response map[string]interface{}
+		if err := json.Unmarshal(body, &response); err != nil {
+			http.Error(w, "Failed to parse user info", http.StatusUnauthorized)
 			return nil
 		}
 
 		user := models.User{
-			IsAnonymous: true, // TODO: mark this as service account user
+			IsAnonymous: false,
+			FirstName:   response["given_name"].(string),
+			LastName:    response["family_name"].(string),
+			Email:       response["email"].(string),
+			Picture:     response["picture"].(string),
 		}
 
 		return &user
