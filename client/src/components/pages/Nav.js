@@ -8,6 +8,7 @@ function Nav() {
     const { isAuthenticated } = useAuth();
 
     function handleLogOut(e) {
+        localStorage.removeItem('authToken');
         e.preventDefault();
         window.location.assign(logOutAuthorizeUrl);
     }

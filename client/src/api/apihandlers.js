@@ -5,8 +5,11 @@ import { feedsUrl, tweetsUrl, userInfoUrl, getTaggedFeedsUrl } from '../common';
 // Function to fetch tags from the server
 export const fetchUserInfo = async () => {
   try {
+    const authToken = localStorage.getItem("authToken");
+    const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
     const instance = axios.create({
       withCredentials: true,
+      headers: headers
     });
     const response = await instance.get(userInfoUrl);
 
@@ -51,6 +54,12 @@ export const addTweetToServer = async (formData, tweetTags) => {
   const currentDate = new Date().toISOString();
 
   try {
+    const authToken = localStorage.getItem("authToken");
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(authToken && { 'Authorization': `Bearer ${authToken}` })
+    };
+
     const response = await axios.post(tweetsUrl, {
       id: uuidv4(),
       title: formData.title,
@@ -61,9 +70,7 @@ export const addTweetToServer = async (formData, tweetTags) => {
       likes: null
     }, {
       withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      headers: headers
     });
 
     if (response.status === 201) {
