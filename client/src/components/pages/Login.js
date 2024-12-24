@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from "react";
 import LoginStyles from "../../styles/pages/Login.module.css"
-import {loginAuthorizeUrl} from "../../common.js"
+import { loginAuthorizeUrl } from "../../common.js"
 import { GoogleLogin } from '@react-oauth/google';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext.tsx';
 
-function Login() {    
+function Login() {
     const [clicked, setClicked] = useState(false);
     useEffect(() => {
         if (clicked) {
             window.location.assign(loginAuthorizeUrl);
         }
     });
+
+    const { checkAuth } = useAuth();
+    const navigate = useNavigate();
 
     return (
         <div className={LoginStyles.loginContainer}>
@@ -22,6 +27,8 @@ function Login() {
                     onSuccess={credentialResponse => {
                         console.log(credentialResponse);
                         localStorage.setItem('authToken', credentialResponse.credential);
+                        checkAuth();
+                        navigate("/"); // Redirect to root
                     }}
 
                     onError={() => {
