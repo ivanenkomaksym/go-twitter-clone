@@ -1,11 +1,12 @@
 import axios from "axios"
 import { v4 as uuidv4 } from 'uuid';
 import { feedsUrl, tweetsUrl, userInfoUrl, getTaggedFeedsUrl } from '../common';
+import { getAuthToken } from '../utils/storage';
 
 // Function to fetch tags from the server
 export const fetchUserInfo = async () => {
   try {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = getAuthToken();
     const headers = authToken ? { 'Authorization': `Bearer ${authToken}` } : {};
     const instance = axios.create({
       withCredentials: true,
@@ -54,7 +55,7 @@ export const addTweetToServer = async (formData, tweetTags) => {
   const currentDate = new Date().toISOString();
 
   try {
-    const authToken = localStorage.getItem("authToken");
+    const authToken = getAuthToken();
     const headers = {
       'Content-Type': 'application/json',
       ...(authToken && { 'Authorization': `Bearer ${authToken}` })

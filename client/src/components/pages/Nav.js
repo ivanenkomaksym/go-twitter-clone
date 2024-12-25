@@ -3,12 +3,13 @@ import { Link } from "react-router-dom"
 import NavStyles from "../../styles/pages/Nav.module.css"
 import { logOutAuthorizeUrl } from "../../common.js"
 import { useAuth } from '../auth/AuthContext.tsx';
+import { removeAuthToken } from '../../utils/storage';
 
 function Nav() {
     const { isAuthenticated } = useAuth();
 
     function handleLogOut(e) {
-        localStorage.removeItem('authToken');
+        removeAuthToken();
         e.preventDefault();
         window.location.assign(logOutAuthorizeUrl);
     }
