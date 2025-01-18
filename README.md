@@ -1,5 +1,7 @@
 # Twitter clone in GO
 
+![Alt text](docs/ui.png?raw=true)
+
 Simple twitter clone with React frontend, Go backend and Server-Sent Events to support real-time refreshing. This example is based on [HTTP Server push using SSE (Server-Sent Events)](https://github.com/ThreeDotsLabs/watermill/tree/master/_examples/real-world-examples/server-sent-events). Supports multi-environment setup, containerization, CI/CD, cloud deployment.
 
 ![Alt text](docs/screen.gif?raw=true)
