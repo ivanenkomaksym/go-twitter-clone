@@ -29,6 +29,18 @@ Simple twitter clone with React frontend, Go backend and Server-Sent Events to s
 ## Settings
 Application settings can be configured in `internal/config/appsettings.json` file. Possible configurations include mode of the application, API server configuration, Tweets and Feeds database connections, NATS messaging connection.
 
+## Run cloud mode locally
+First set `GOOGLE_APPLICATION_CREDENTIALS` environment variable to point to service account key, for example for PowerShell this could be:
+
+```ps
+$env:GOOGLE_APPLICATION_CREDENTIALS = "D:\Downloads\twitter-clone-438407-4b74b07d276e.json"
+```
+
+Then in `server` folder run
+```
+go run cmd\main.go
+```
+
 # Multi-Environment Configuration for Deployment
 
 This project supports multiple deployment environments: in-memory, persistent, and cloud using Docker Compose. CI/CD workflow supports cloud deployment environment by default.
