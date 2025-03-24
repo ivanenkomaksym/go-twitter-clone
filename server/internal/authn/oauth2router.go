@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"twitter-clone/internal/config"
@@ -107,7 +107,7 @@ func (router OAuth2Router) getUserDataFromGoogle(code string) (*AuthenticationRe
 		return nil, fmt.Errorf("failed getting user info: %s", err.Error())
 	}
 	defer response.Body.Close()
-	contents, err := ioutil.ReadAll(response.Body)
+	contents, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed read response: %s", err.Error())
 	}
@@ -123,7 +123,7 @@ func (router OAuth2Router) getUserDataFromGoogle(code string) (*AuthenticationRe
 	return &result, nil
 }
 
-func (router OAuth2Router) generateStateOauthCookie(w http.ResponseWriter) string {
+func (router OAuth2Router) generateStateOauthCookie(_ http.ResponseWriter) string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	state := base64.URLEncoding.EncodeToString(b)

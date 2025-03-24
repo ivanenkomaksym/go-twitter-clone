@@ -3,7 +3,7 @@ package authn
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"twitter-clone/internal/config"
 	"twitter-clone/internal/models"
@@ -36,7 +36,7 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 		defer resp.Body.Close()
 
 		// Read the response body
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			http.Error(w, "Failed to read response from Google", http.StatusUnauthorized)
 			return nil
@@ -76,7 +76,7 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 	defer resp.Body.Close()
 
 	// Read the response body
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		http.Error(w, "Failed to read response from Google", http.StatusUnauthorized)
 		return nil
