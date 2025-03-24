@@ -43,7 +43,7 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 		}
 
 		// Parse the response body (which contains user info)
-		var response map[string]interface{}
+		var response map[string]any
 		if err := json.Unmarshal(body, &response); err != nil {
 			http.Error(w, "Failed to parse user info", http.StatusUnauthorized)
 			return nil
@@ -83,7 +83,7 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 	}
 
 	// Parse the response body (which contains user info)
-	var response map[string]interface{}
+	var response map[string]any
 	if err := json.Unmarshal(body, &response); err != nil {
 		http.Error(w, "Failed to parse user info", http.StatusUnauthorized)
 		return nil
@@ -97,11 +97,18 @@ func (validator AuthenticationValidator) ValidateAuthentication(w http.ResponseW
 
 	user := models.User{
 		IsAnonymous: false,
-		FirstName:   response["given_name"].(string),
-		LastName:    response["family_name"].(string),
-		Email:       response["email"].(string),
-		Picture:     response["picture"].(string),
+		FirstName:   getString(response["given_name"]),
+		LastName:    getString(response["family_name"]),
+		Email:       getString(response["email"]),
+		Picture:     getString(response["picture"]),
 	}
 
 	return &user
+}
+
+func getString(value any) string {
+	if str, ok := value.(string); ok {
+		return str
+	}
+	return ""
 }
