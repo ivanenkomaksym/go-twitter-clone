@@ -2,7 +2,7 @@
 import React from 'react';
 import TweetCard from './TweetCard';
 
-const TweetList = ({ taggedTweets, selectedTag, handleTagClick }) => {
+const TweetList = ({ taggedTweets, handleTagClick }) => {
   return (
     <div className="tweet-list">
       {taggedTweets.map(tweet => (

@@ -11,6 +11,7 @@ import { useAuth } from '../auth/AuthContext.tsx';
 function Main() {
     const [tags, setTags] = useState([]);
     const [tweetTags, setTweetTags] = useState([]);
+    const [tweets, setTweets] = useState([]);
     const [selectedTag, setSelectedTag] = useState(null);
     const [taggedTweets, setTaggedTweets] = useState([]);
     const [eventSource, setEventSource] = useState(null);
@@ -31,6 +32,16 @@ function Main() {
             }));
         }
     }, [user]);
+
+    useEffect(() => {
+        const fetchTweets = async () => {
+            const fetchedTweets = await apiHandlers.fetchTweetsFromServer();
+            console.log('fetchedTweets:', fetchedTweets);
+            setTaggedTweets(fetchedTweets);
+        };
+
+        fetchTweets();
+    }, [tweets, setTweets]);
 
     useEffect(() => {
         const fetchTags = async () => {
@@ -109,27 +120,25 @@ function Main() {
         <div className="container">
             <div className="main-panel">
                 {isAuthenticated ? (
-                    <>
-                        <InputForm
-                            user={user}
-                            formData={formData}
-                            handleInputChange={handleInputChange}
-                            handleAddTweet={handleAddTweet}
-                        />
-                    </>
+                    <InputForm
+                        user={user}
+                        formData={formData}
+                        handleInputChange={handleInputChange}
+                        handleAddTweet={handleAddTweet}
+                    />
                 ) : (
                     <div className="welcomeMessage">
                         <Link to="/account/login">Login</Link> to post tweets.
                     </div>
                 )}
-                {selectedTag && <TweetList taggedTweets={taggedTweets} selectedTag={selectedTag} handleTagClick={handleTagClick} />}
+                <TweetList taggedTweets={taggedTweets} handleTagClick={handleTagClick} />
             </div>
-
+    
             <div>
                 <TagList tags={tags} handleTagClick={handleTagClick} />
             </div>
         </div>
-    );
+    );    
 }
 
 export default Main;

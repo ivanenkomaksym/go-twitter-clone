@@ -51,6 +51,28 @@ export const fetchTagsFromServer = async () => {
   }
 };
 
+export const fetchTweetsFromServer = async () => {
+  try {
+    const instance = axios.create({
+      withCredentials: true,
+    });
+    const response = await instance.get(tweetsUrl);
+
+    if (response.status === 200) {
+      const data = await response.data;
+      console.log('data:', data);
+      return data;
+    }
+    else {
+      console.error('Failed to fetch tweets.');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error:', error);
+    return [];
+  }
+};
+
 export const addTweetToServer = async (formData, tweetTags) => {
   const currentDate = new Date().toISOString();
 
@@ -96,6 +118,7 @@ export const fetchTaggedTweets = async (tag, setTaggedTweets) => {
 
     if (response.status === 200) {
       const feedData = await response.data;
+      console.log('feedData:', feedData);
       setTaggedTweets(feedData.tweets);
       return true;
     } else {
