@@ -36,18 +36,8 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Sidebar styling */
-.sidebar {
-  flex: 1;                  /* Sidebar takes up less space */
-  max-width: 250px;         /* Control the sidebar width */
-  background-color: #f9f9f9;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.sidebar h3 {
-  margin-bottom: 10px;
-  font-size: 1.2rem;
-  font-weight: bold;
+@media (max-width: 768px) {
+  .tags-panel {
+    display: none;
+  }
 }

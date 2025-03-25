@@ -134,7 +134,7 @@ function Main() {
                 <TweetList taggedTweets={taggedTweets} handleTagClick={handleTagClick} />
             </div>
     
-            <div>
+            <div className="tags-panel">
                 <TagList tags={tags} handleTagClick={handleTagClick} />
             </div>
         </div>
